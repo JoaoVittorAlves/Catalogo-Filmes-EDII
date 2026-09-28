@@ -1,0 +1,206 @@
+# Sistema de Biblioteca — Estruturas de Dados
+
+Projeto acadêmico desenvolvido para a disciplina de **Estruturas de Dados II**, com o objetivo de implementar e demonstrar, na prática, diferentes estruturas de dados em linguagem C.
+
+## Objetivo
+
+Desenvolver uma aplicação de gerenciamento de biblioteca utilizando:
+
+* Lista encadeada
+* Árvore Binária de Busca (BST)
+* Lista com saltos (Skip List)
+
+O projeto busca demonstrar o funcionamento, as operações e as características de cada estrutura, incluindo suas diferenças de organização e complexidade.
+
+## Estruturas de Dados
+
+### Lista Encadeada
+
+Utilizada para armazenar e manipular uma sequência de elementos através de nós conectados por ponteiros.
+
+Estrutura básica:
+
+```text
+[Livro] → [Livro] → [Livro] → NULL
+```
+
+Operações previstas:
+
+* Inserção
+* Remoção
+* Busca
+* Percurso
+* Liberação da memória
+
+### Árvore Binária de Busca
+
+Utilizada para organizar os livros de acordo com seu identificador.
+
+A estrutura segue a regra:
+
+```text
+        menor
+          ↓
+      [   NÓ   ]
+          ↑
+        maior
+```
+
+Exemplo:
+
+```text
+             50
+           /    \
+         30      80
+        /  \    /  \
+      10   40  60   90
+```
+
+Operações previstas:
+
+* Inserção
+* Busca
+* Remoção
+* Percurso em ordem
+* Liberação da memória
+
+### Skip List
+
+Utilizada como uma estrutura de busca ordenada baseada em múltiplos níveis de ponteiros.
+
+Exemplo conceitual:
+
+```text
+Nível 2:       10 ───────── 50 ───────── 90
+
+Nível 1:       10 ─── 30 ── 50 ─── 70 ── 90
+
+Nível 0:       10 ─ 20 ─ 30 ─ 40 ─ 50 ─ 60 ─ 70 ─ 80 ─ 90
+```
+
+Os níveis superiores funcionam como atalhos, permitindo que determinados elementos sejam alcançados sem percorrer todos os nós.
+
+Operações previstas:
+
+* Inserção
+* Busca
+* Remoção
+* Percurso
+* Liberação da memória
+
+## Aplicação
+
+A aplicação simula um sistema simples de gerenciamento de uma biblioteca.
+
+Cada livro possui informações como:
+
+```text
+ID
+Título
+Autor
+Ano
+Disponibilidade
+```
+
+A aplicação será executada pelo terminal e contará com operações para gerenciamento dos livros.
+
+Menu previsto:
+
+```text
+===== SISTEMA DE BIBLIOTECA =====
+
+1 - Cadastrar livro
+2 - Buscar livro
+3 - Remover livro
+4 - Emprestar livro
+5 - Devolver livro
+6 - Listar livros
+7 - Mostrar árvore
+8 - Mostrar Skip List
+0 - Sair
+```
+
+## Organização do projeto
+
+```text
+biblioteca-ed/
+│
+├── include/
+│   ├── livro.h
+│   ├── lista.h
+│   ├── arvore.h
+│   └── skiplist.h
+│
+├── src/
+│   ├── livro.c
+│   ├── lista.c
+│   ├── arvore.c
+│   ├── skiplist.c
+│   └── main.c
+│
+├── Makefile
+└── README.md
+```
+
+## Tecnologias
+
+* **C**
+* Git
+* GitHub
+* GCC
+
+## Conceitos utilizados
+
+O projeto aborda conceitos fundamentais de Estruturas de Dados e programação em C, incluindo:
+
+* Structs
+* Ponteiros
+* Alocação dinâmica de memória
+* `malloc`
+* `free`
+* Listas encadeadas
+* Árvores Binárias de Busca
+* Skip Lists
+* Recursão
+* Busca
+* Inserção
+* Remoção
+* Análise de complexidade
+* Gerenciamento de memória
+
+## Complexidade
+
+As complexidades serão analisadas durante o desenvolvimento e apresentação do projeto.
+
+De forma geral:
+
+| Estrutura               |             Busca |          Inserção |           Remoção |
+| ----------------------- | ----------------: | ----------------: | ----------------: |
+| Lista encadeada         |              O(n) |      O(1)* / O(n) |              O(n) |
+| Árvore Binária de Busca |        O(log n)** |        O(log n)** |        O(log n)** |
+| Skip List               | O(log n) esperado | O(log n) esperado | O(log n) esperado |
+
+* Depende da posição de inserção e da implementação utilizada.
+
+** Em uma árvore razoavelmente balanceada. No pior caso, uma BST pode chegar a O(n).
+
+## Status
+
+Em desenvolvimento.
+
+* [x] Estrutura inicial do projeto
+* [ ] Implementação da estrutura de Livro
+* [ ] Implementação da Lista Encadeada
+* [ ] Implementação da Árvore Binária de Busca
+* [ ] Implementação da Skip List
+* [ ] Integração das estruturas
+* [ ] Implementação do menu
+* [ ] Testes
+* [ ] Documentação
+* [ ] Preparação para apresentação
+
+## Autores
+João Vittor Alves 
+Georgiana 
+
+Projeto acadêmico desenvolvido para a disciplina de **Estruturas de Dados II**.
