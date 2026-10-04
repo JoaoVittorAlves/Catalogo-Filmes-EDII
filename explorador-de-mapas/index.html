@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Explorador de Mapas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="estilos/app.css">
+</head>
+<body>
+  <header class="topo">
+    <h1>Explorador de Mapas</h1>
+    <p class="fonte-dados" id="fonte-dados"></p>
+    <button class="botao botao-discreto" id="botao-sobre" type="button">Como funciona</button>
+  </header>
+
+  <main class="layout">
+    <!-- ============================================================ controles -->
+    <aside class="painel painel-controles">
+      <section class="bloco" aria-labelledby="t-busca">
+        <h2 id="t-busca">Pesquisar local</h2>
+        <input id="campo-busca" type="search" placeholder="Digite o começo de um nome" autocomplete="off" aria-describedby="nota-busca">
+        <ol id="sugestoes" class="sugestoes"></ol>
+        <p class="nota" id="nota-busca">A busca percorre a árvore afunilada de nomes.</p>
+      </section>
+
+      <section class="bloco" aria-labelledby="t-categorias">
+        <h2 id="t-categorias">Categorias</h2>
+        <p class="nota">As mais usadas sobem. Custo médio da busca: <strong id="custo-mtf">0</strong> comparações.</p>
+        <ul id="lista-categorias" class="lista-categorias"></ul>
+      </section>
+
+      <section class="bloco" aria-labelledby="t-exploracao">
+        <h2 id="t-exploracao">Exploração</h2>
+        <p class="nota">Distâncias medidas a partir de <strong id="texto-origem"></strong>. Arraste a mira ou clique com o botão direito no mapa para mudar a origem.</p>
+        <button class="botao" id="botao-origem-centro" type="button">Usar o centro do mapa como origem</button>
+
+        <label for="controle-nivel">Nível de detalhe <output id="saida-nivel" for="controle-nivel"></output></label>
+        <input type="range" id="controle-nivel" min="0" max="5" step="1" value="0">
+        <div class="escala"><span>todos os locais</span><span>só os principais</span></div>
+
+        <label for="controle-raio-min">Distância mínima <output id="saida-raio-min" for="controle-raio-min"></output></label>
+        <input type="range" id="controle-raio-min" min="0" max="100" value="0">
+        <label for="controle-raio-max">Distância máxima <output id="saida-raio-max" for="controle-raio-max"></output></label>
+        <input type="range" id="controle-raio-max" min="0" max="100" value="100">
+
+        <label class="interruptor"><input type="checkbox" id="opcao-previa" checked> Passar o mouse sobre um local também o aproxima da raiz da árvore (splay parcial)</label>
+      </section>
+
+      <section class="bloco" aria-labelledby="t-resultados">
+        <h2 id="t-resultados">No mapa agora <small id="contagem-mapa"></small></h2>
+        <ol id="lista-resultados" class="lista-resultados"></ol>
+      </section>
+    </aside>
+
+    <!-- ============================================================ mapa -->
+    <section class="area-mapa" aria-label="Mapa"><div id="mapa"></div></section>
+
+    <!-- ============================================================ estruturas -->
+    <section class="area-estruturas" aria-label="Estruturas de dados">
+      <div class="abas" role="tablist">
+        <button role="tab" type="button" aria-selected="true" data-aba="lista">Lista de categorias</button>
+        <button role="tab" type="button" aria-selected="false" data-aba="saltos">Lista com saltos</button>
+        <button role="tab" type="button" aria-selected="false" data-aba="arvore">Árvore afunilada</button>
+      </div>
+      <div class="painel-aba" role="tabpanel" data-painel="lista">
+        <p class="explicacao" id="explicacao-lista"></p>
+        <div class="desenho" id="desenho-lista"></div>
+      </div>
+      <div class="painel-aba" role="tabpanel" data-painel="saltos" hidden>
+        <p class="explicacao" id="explicacao-saltos"></p>
+        <div class="desenho" id="desenho-saltos"></div>
+      </div>
+      <div class="painel-aba" role="tabpanel" data-painel="arvore" hidden>
+        <div class="barra-arvore">
+          <p class="explicacao" id="explicacao-arvore"></p>
+          <label>Profundidade exibida
+            <select id="profundidade-arvore"><option>2</option><option selected>3</option><option>4</option><option>5</option></select>
+          </label>
+          <button class="botao" id="botao-repetir" type="button">Repetir animação</button>
+        </div>
+        <ol class="registro-rotacoes" id="registro-rotacoes"></ol>
+        <div class="desenho" id="desenho-arvore"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ detalhes -->
+    <aside class="painel painel-detalhes" id="painel-detalhes" aria-live="polite"></aside>
+  </main>
+
+  <dialog id="dialogo-sobre">
+    <h2>Como o explorador funciona</h2>
+    <p>Cada parte da tela é controlada por uma estrutura de dados. O painel inferior mostra a estrutura trabalhando.</p>
+    <h3>Categorias: lista com movimentação ao início</h3>
+    <p>Escolher uma categoria a leva para o topo da lista (logo abaixo de “Todas as categorias”, que é fixa). Abrir um local de uma categoria a sobe só uma posição, por transposição.</p>
+    <h3>Mapa: lista com saltos</h3>
+    <p>Todos os locais ficam ordenados pela distância até a mira. Cada local tem uma altura; os mais conhecidos tendem a ser mais altos. O nível de detalhe escolhe a partir de qual altura os locais aparecem, e as distâncias mínima e máxima definem o anel percorrido.</p>
+    <h3>Pesquisa e histórico: árvore afunilada</h3>
+    <p>Os nomes ficam numa árvore de busca. Abrir um local o leva até a raiz com rotações zig, zig-zig e zig-zag; passar o mouse sobre ele o sobe só um passo. O topo da árvore mostra, assim, os locais em que você mexeu por último.</p>
+    <form method="dialog"><button class="botao" type="submit">Fechar</button></form>
+  </dialog>
+
+  <!-- bibliotecas -->
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <!-- estruturas de dados (independentes da interface) -->
+  <script src="src/util/geo.js"></script>
+  <script src="src/estruturas/ListaMoverParaInicio.js"></script>
+  <script src="src/estruturas/ListaComSaltos.js"></script>
+  <script src="src/estruturas/ArvoreAfunilada.js"></script>
+  <script src="src/app/Catalogo.js"></script>
+  <!-- dados: a base do Wikidata (se gerada) tem prioridade sobre a semente -->
+  <script src="dados/locais-semente.js"></script>
+  <script src="dados/locais.js" onerror="this.remove()"></script>
+  <!-- visualização e interface -->
+  <script src="src/visualizacao/desenhoLista.js"></script>
+  <script src="src/visualizacao/desenhoSaltos.js"></script>
+  <script src="src/visualizacao/desenhoArvore.js"></script>
+  <script src="src/app/interface.js"></script>
+</body>
+</html>

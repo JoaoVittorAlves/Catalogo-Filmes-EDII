@@ -1,0 +1,16 @@
+{
+  "name": "explorador-de-mapas",
+  "version": "1.0.0",
+  "description": "Explorador de locais geográficos do Brasil construído sobre Lista com Movimentação ao Início, Lista com Saltos e Árvore Afunilada (com modificações).",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "node --test testes/*.test.js",
+    "benchmark": "node scripts/benchmark.js",
+    "dados": "python3 scripts/gerar_base_wikidata.py",
+    "servir": "python3 -m http.server 8000"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
