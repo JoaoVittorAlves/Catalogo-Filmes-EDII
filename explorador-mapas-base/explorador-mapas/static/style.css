@@ -57,13 +57,26 @@ main {
     background: #e5e7eb;
 }
 
+.botoes button.ativo {
+    background: #111827;
+    color: white;
+}
+
+#busca {
+    width: 300px;
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
 .controle-nivel {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-#nivel {
+#nivel,
+#raio {
     width: 300px;
 }
 
@@ -109,6 +122,16 @@ main {
     padding: 6px 9px;
     border-radius: 6px;
     margin: 3px;
+}
+
+.no-skip.visitado {
+    background: #fde68a;
+    font-weight: bold;
+}
+
+#skip-list {
+    max-height: 420px;
+    overflow-y: auto;
 }
 
 .arvore {

@@ -2,6 +2,7 @@ class NoLista:
     def __init__(self, valor):
         self.valor = valor
         self.proximo = None
+        self.acessos = 0
 
 
 class ListaMovimentacaoInicio:
@@ -10,6 +11,7 @@ class ListaMovimentacaoInicio:
 
     Quando um elemento existente é acessado, ele é removido
     de sua posição atual e colocado no início da lista.
+    Cada nó também conta quantas vezes foi acessado.
     """
 
     def __init__(self):
@@ -35,12 +37,14 @@ class ListaMovimentacaoInicio:
         return None
 
     def acessar(self, valor):
-        """Busca e move o elemento para o início."""
+        """Busca, incrementa o contador e move o elemento para o início."""
         anterior = None
         atual = self.inicio
 
         while atual:
             if atual.valor == valor:
+                atual.acessos += 1
+
                 if anterior is not None:
                     anterior.proximo = atual.proximo
                     atual.proximo = self.inicio
@@ -62,6 +66,17 @@ class ListaMovimentacaoInicio:
             atual = atual.proximo
 
         return valores
+
+    def estrutura(self):
+        """Valores e contadores, na ordem atual da lista."""
+        itens = []
+        atual = self.inicio
+
+        while atual:
+            itens.append({"valor": atual.valor, "acessos": atual.acessos})
+            atual = atual.proximo
+
+        return itens
 
     def __len__(self):
         contador = 0

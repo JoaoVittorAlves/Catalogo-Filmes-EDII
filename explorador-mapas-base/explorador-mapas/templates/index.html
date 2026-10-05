@@ -26,6 +26,21 @@
             <h2>Categorias</h2>
             <div id="categorias" class="botoes"></div>
 
+            <h2>Buscar por nome</h2>
+            <input id="busca" type="search" placeholder="Ex.: farol, praia...">
+
+            <h2>Distância da referência (km)</h2>
+            <div class="controle-nivel">
+                De
+                <input id="raio-min" type="range" min="0" max="2000" step="10" value="0">
+                <span id="raio-min-valor">0</span>
+            </div>
+            <div class="controle-nivel">
+                Até
+                <input id="raio" type="range" min="10" max="2000" step="10" value="2000">
+                <span id="raio-valor">2000</span>
+            </div>
+
             <h2>Nível da Skip List</h2>
             <div class="controle-nivel">
                 <input id="nivel" type="range" min="0" max="4" value="0">
@@ -33,9 +48,10 @@
             </div>
 
             <p class="explicacao">
-                Nível 0 mostra todos os locais presentes na Skip List.
-                Níveis superiores mostram apenas os locais presentes
-                naquele nível da estrutura.
+                <strong id="total-locais">0</strong> locais exibidos.
+                Nível 0 mostra todos os locais. Níveis superiores mostram
+                apenas os locais mais relevantes.
+                Clique no mapa para mudar o ponto de referência.
             </p>
         </section>
 
@@ -58,6 +74,7 @@
 
             <div class="estrutura-card">
                 <h2>Splay Tree</h2>
+                <p id="splay-info">A árvore começa vazia e guarda os locais acessados.</p>
                 <div id="splay-tree"></div>
             </div>
         </section>
