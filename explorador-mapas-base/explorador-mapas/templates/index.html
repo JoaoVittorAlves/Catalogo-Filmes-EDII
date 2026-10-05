@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador de Mapas</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header>
+        <div>
+            <h1>Explorador de Mapas</h1>
+            <p>Visualização de pontos geográficos utilizando estruturas de dados.</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="painel">
+            <h2>Categorias</h2>
+            <div id="categorias" class="botoes"></div>
+
+            <h2>Nível da Skip List</h2>
+            <div class="controle-nivel">
+                <input id="nivel" type="range" min="0" max="4" value="0">
+                <span id="nivel-valor">0</span>
+            </div>
+
+            <p class="explicacao">
+                Nível 0 mostra todos os locais presentes na Skip List.
+                Níveis superiores mostram apenas os locais presentes
+                naquele nível da estrutura.
+            </p>
+        </section>
+
+        <section class="conteudo">
+            <div id="mapa"></div>
+
+            <aside class="detalhes">
+                <h2>Local selecionado</h2>
+                <div id="detalhes-local">
+                    <p>Selecione um ponto no mapa.</p>
+                </div>
+            </aside>
+        </section>
+
+        <section class="estruturas">
+            <div class="estrutura-card">
+                <h2>Skip List</h2>
+                <div id="skip-list"></div>
+            </div>
+
+            <div class="estrutura-card">
+                <h2>Splay Tree</h2>
+                <div id="splay-tree"></div>
+            </div>
+        </section>
+    </main>
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

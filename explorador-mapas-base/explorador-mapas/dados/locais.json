@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "nome": "Farol do Cabo Branco",
+    "categoria": "Pontos turísticos",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "latitude": -7.1926,
+    "longitude": -34.8001,
+    "descricao": "Ponto turístico localizado na região do Cabo Branco.",
+    "imagem": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 2,
+    "nome": "Praia de Tambaú",
+    "categoria": "Praias",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "latitude": -7.1195,
+    "longitude": -34.8235,
+    "descricao": "Uma das praias mais conhecidas de João Pessoa.",
+    "imagem": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 3,
+    "nome": "Praia do Bessa",
+    "categoria": "Praias",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "latitude": -7.0735,
+    "longitude": -34.8392,
+    "descricao": "Praia urbana localizada no litoral norte de João Pessoa.",
+    "imagem": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 4,
+    "nome": "Centro Cultural São Francisco",
+    "categoria": "Museus e cultura",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "latitude": -7.1165,
+    "longitude": -34.8865,
+    "descricao": "Complexo histórico e cultural localizado no centro histórico.",
+    "imagem": "https://images.unsplash.com/photo-1564399579883-451a5d44ec08?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 5,
+    "nome": "Parque Solon de Lucena",
+    "categoria": "Parques",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "latitude": -7.1198,
+    "longitude": -34.8811,
+    "descricao": "Área pública tradicional no centro de João Pessoa.",
+    "imagem": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 6,
+    "nome": "Praça Antenor Navarro",
+    "categoria": "Praças",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "latitude": -7.1174,
+    "longitude": -34.8857,
+    "descricao": "Praça histórica do centro antigo de João Pessoa.",
+    "imagem": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 7,
+    "nome": "Praia do Seixas",
+    "categoria": "Praias",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "latitude": -7.1508,
+    "longitude": -34.7941,
+    "descricao": "Praia próxima ao ponto mais oriental das Américas.",
+    "imagem": "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 8,
+    "nome": "Estação Cabo Branco",
+    "categoria": "Museus e cultura",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "latitude": -7.1482,
+    "longitude": -34.7956,
+    "descricao": "Espaço cultural, científico e turístico no Cabo Branco.",
+    "imagem": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 9,
+    "nome": "Praia do Jacaré",
+    "categoria": "Pontos turísticos",
+    "cidade": "Cabedelo",
+    "estado": "PB",
+    "latitude": -7.0387,
+    "longitude": -34.8504,
+    "descricao": "Área turística conhecida pelo pôr do sol no rio Paraíba.",
+    "imagem": "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 10,
+    "nome": "Fortaleza de Santa Catarina",
+    "categoria": "Monumentos históricos",
+    "cidade": "Cabedelo",
+    "estado": "PB",
+    "latitude": -6.9874,
+    "longitude": -34.8357,
+    "descricao": "Fortificação histórica localizada em Cabedelo.",
+    "imagem": "https://images.unsplash.com/photo-1568322445389-f64ac2515020?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 11,
+    "nome": "Praia de Coqueirinho",
+    "categoria": "Praias",
+    "cidade": "Conde",
+    "estado": "PB",
+    "latitude": -7.302,
+    "longitude": -34.801,
+    "descricao": "Praia localizada no litoral sul da Paraíba.",
+    "imagem": "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": 12,
+    "nome": "Praia de Tambaba",
+    "categoria": "Praias",
+    "cidade": "Conde",
+    "estado": "PB",
+    "latitude": -7.35,
+    "longitude": -34.799,
+    "descricao": "Praia do litoral sul paraibano conhecida por suas falésias.",
+    "imagem": "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=900&q=80"
+  }
+]
