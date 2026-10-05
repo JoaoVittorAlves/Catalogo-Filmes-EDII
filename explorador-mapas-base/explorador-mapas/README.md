@@ -1,52 +1,190 @@
 # Explorador de Mapas
 
-Projeto-base para a disciplina de Estrutura de Dados e Algoritmos II.
+Projeto da disciplina de Estrutura de Dados e Algoritmos II.
 
-A aplicação tem como objetivo visualizar uma base de pontos de interesse
-geográficos e utilizar estruturas de dados tanto para organizar os dados
-quanto para implementar funcionalidades visíveis ao usuário.
+A aplicação permite visualizar uma base de 2.580 pontos de interesse do
+Nordeste brasileiro (praias, museus, igrejas, parques, monumentos etc.).
+As estruturas de dados são usadas tanto para organizar os dados quanto para
+implementar funcionalidades visíveis ao usuário.
 
 ## Estruturas utilizadas
 
+| Estrutura | Tipo | Papel na aplicação |
+|---|---|---|
+| Lista com Movimentação ao Início | linear | Categorias, na ordem das mais recentemente acessadas |
+| Skip List | linear com níveis | Locais ordenados pela distância até um ponto de referência; os níveis controlam o detalhamento do mapa |
+| Splay Tree (Árvore Afunilada) | hierárquica | Histórico dos locais acessados; o último acessado fica na raiz |
+
 ### 1. Lista com Movimentação ao Início
 
-Utilizada para organizar as categorias exploradas.
+Guarda as categorias de locais. Quando o usuário clica em uma categoria:
 
-Quando uma categoria é acessada, ela é movimentada para o início da lista.
+- ela é movida para o início da lista;
+- o contador de acessos dela é incrementado;
+- o mapa passa a mostrar só os locais da categoria.
+
+Os botões aparecem na ordem da lista.
 
 ### 2. Skip List
 
-Utilizada para organizar os locais por uma chave ordenada.
+**Chave:** `(distância em km até o ponto de referência, id)`.
 
-A aplicação permite selecionar um nível da Skip List. O nível 0 contém
-todos os locais, enquanto níveis superiores representam uma visão mais
-resumida da estrutura.
+- A distância é calculada com a fórmula de Haversine
+  (`Local.distancia_km`).
+- O `id` desempata locais à mesma distância.
+- O ponto de referência começa no centro de João Pessoa. Ao clicar no mapa,
+  o ponto muda e a Skip List é reconstruída em O(n log n).
+
+**Uso na interface:**
+
+- o slider "Nível" escolhe qual nível da lista é exibido no mapa;
+- os sliders "De/Até" escolhem o intervalo de distância.
 
 ### 3. Splay Tree
 
-Utilizada para organizar os locais acessados.
+Guarda o histórico dos locais acessados, com o `id` como chave. Ao clicar
+em "Ver local", o local é acessado na árvore e o splay o leva até a raiz.
+A interface mostra:
 
-Quando um local é selecionado, a busca na Splay Tree reorganiza a árvore
-por meio da operação de Splay, levando o elemento acessado para a raiz.
+- a árvore;
+- o número de acessos de cada nó;
+- as rotações feitas (zig, zig-zig, zig-zag).
+
+## Modificações nos algoritmos clássicos
+
+### Skip List: nível definido pela relevância
+
+- **Na versão clássica,** o nível de cada nó é sorteado (moeda com p = 1/2).
+- **Na nossa versão,** `inserir(chave, valor, nivel)` aceita um nível fixo.
+  Sem esse parâmetro, o sorteio clássico continua funcionando.
+- **Como o nível é escolhido** (`definir_niveis_por_relevancia` em
+  `app.py`):
+  - os locais são ordenados pela relevância, que é o número de Wikipédias
+    com artigo sobre o local;
+  - os 50% mais relevantes vão ao nível 1 ou acima;
+  - os 25% mais relevantes, ao nível 2 ou acima;
+  - os 12,5% mais relevantes, ao nível 3 ou acima;
+  - os 6,25% mais relevantes, ao nível 4.
+- **Por quê:**
+  - Mantemos a mesma proporção esperada da versão clássica (cada nível tem
+    cerca de metade dos nós do nível abaixo: 2580 → 1290 → 645 → 323 →
+    162), então a busca continua O(log n).
+  - O que muda é **quem** sobe: os níveis altos passam a funcionar como o
+    "zoom" de um mapa real, mostrando só os locais mais importantes.
+  - No modelo clássico, o nível 4 mostraria locais aleatórios.
+- **Observação:** muitos locais têm a mesma relevância. O empate é
+  resolvido pelo `id`.
+
+### Skip List: busca por intervalo de distância em um nível
+
+`buscar_intervalo(minimo, maximo, nivel)` funciona em duas etapas.
+
+1. **Descida:** igual à busca clássica, desce do nível mais alto até o
+   nível escolhido, procurando o último nó com distância menor que
+   `minimo`. Custo O(log n).
+2. **Varredura:** percorre apenas o nível escolhido enquanto a distância
+   for menor ou igual a `maximo`.
+
+**Retorno:** os locais encontrados e o caminho da descida. Os nós desse
+caminho aparecem destacados em amarelo na visualização da Skip List.
+
+**Exemplo:** do centro de João Pessoa, buscar locais entre 100 e 200 km
+visita cerca de 14 nós na descida. Uma lista simples precisaria passar
+pelos centenas de locais mais próximos antes de chegar aos 100 km.
+
+### Splay Tree: histórico com capacidade limitada
+
+1. **A árvore começa vazia.** `acessar(chave, valor)` faz duas coisas:
+   - se o local já está na árvore, faz o splay e incrementa o contador de
+     acessos do nó;
+   - se não está, insere o local (a inserção também deixa o nó na raiz).
+2. **A capacidade é limitada** (15 nós). Ao passar do limite, a folha mais
+   profunda é removida. A ideia vem da própria splay:
+   - os nós acessados sobem para perto da raiz;
+   - os nós não acessados são empurrados para baixo;
+   - logo, a folha mais profunda é uma boa aproximação do "menos
+     recentemente usado", sem precisar de nenhuma estrutura extra.
+
+   Isso também mantém a árvore pequena o bastante para ser exibida na tela.
+3. **Registro das rotações.** O splay anota cada passo (`zig`, `zig-zig`
+   ou `zig-zag`) em `ultimas_rotacoes`, para mostrar ao usuário o que
+   aconteceu.
+
+### Lista com Movimentação ao Início
+
+O algoritmo é o clássico. Foi acrescentado apenas um contador de acessos
+por nó, exibido nos botões.
+
+## Fonte de dados
+
+**Fonte:** [Wikidata](https://www.wikidata.org), por meio do serviço SPARQL
+(`https://query.wikidata.org/sparql`).
+
+**Como a base é gerada:** o script `scripts/baixar_dados.py` faz uma
+consulta por estado do Nordeste, buscando itens que:
+
+- são de um dos tipos escolhidos (praia, museu, teatro, parque, praça,
+  monumento, forte, igreja, catedral, capela, farol, atração turística,
+  cachoeira, ilha, lago, laguna);
+- têm coordenadas (P625);
+- estão localizados (P131) no estado consultado.
+
+**Campos salvos para cada local:**
+
+- nome;
+- categoria;
+- cidade;
+- estado;
+- coordenadas;
+- descrição;
+- imagem (Wikimedia Commons, P18);
+- relevância (número de sitelinks).
+
+**Resultado:**
+
+- 2.580 locais;
+- 915 locais com imagem;
+- por estado: BA 802, CE 515, PE 255, PI 225, MA 222, RN 203, PB 163,
+  AL 108 e SE 87.
+
+**Licenças:**
+
+- dados do Wikidata: CC0;
+- imagens: cada arquivo do Wikimedia Commons tem a própria licença,
+  indicada na página do arquivo.
+
+Para regenerar a base, rode a partir da pasta `explorador-mapas`:
+
+```powershell
+python scripts/baixar_dados.py
+```
+
+> Se aparecer erro de certificado SSL, instale o `certifi`
+> (`pip install certifi`). O script usa esse pacote automaticamente.
 
 ## Estrutura do projeto
 
 ```text
 explorador-mapas/
-├── app.py
+├── app.py                  # rotas Flask e montagem das estruturas
 ├── estruturas/
 │   ├── lista_mov_inicio.py
 │   ├── skip_list.py
 │   └── splay_tree.py
 ├── modelos/
-│   └── local.py
+│   └── local.py            # Local + distância (Haversine)
 ├── dados/
-│   └── locais.json
+│   └── locais.json         # base gerada a partir do Wikidata
+├── scripts/
+│   └── baixar_dados.py     # gera dados/locais.json
+├── tests/
+│   └── test_estruturas.py  # testes das três estruturas
 ├── templates/
 │   └── index.html
 ├── static/
 │   ├── style.css
 │   └── script.js
+├── PLANO.md                # plano desta etapa de desenvolvimento
 └── README.md
 ```
 
@@ -54,61 +192,56 @@ explorador-mapas/
 
 Recomendado: Python 3.11 ou superior.
 
-### 1. Criar ambiente virtual
-
-Windows PowerShell:
-
 ```powershell
 python -m venv .venv
-```
-
-### 2. Ativar
-
-```powershell
 .venv\Scripts\Activate.ps1
-```
-
-### 3. Instalar Flask
-
-```powershell
 pip install flask
-```
-
-### 4. Executar
-
-```powershell
 python app.py
 ```
 
-Depois abra:
+Depois abra `http://127.0.0.1:5000`.
 
-```text
-http://127.0.0.1:5000
+## Testes
+
+```powershell
+python -m unittest discover tests -v
 ```
 
-## Estado atual
+Os 15 testes verificam:
 
-Esta é uma base inicial para desenvolvimento acadêmico. A base JSON contém
-poucos locais apenas para testar a aplicação.
+- **Lista com Movimentação ao Início:**
+  - movimentação ao início;
+  - ordem dos demais elementos;
+  - contadores.
+- **Skip List:**
+  - nível 0 ordenado e completo;
+  - cada nível é subconjunto do nível abaixo;
+  - nível fixo;
+  - `buscar_intervalo` igual a um filtro por força bruta.
+- **Splay Tree:**
+  - acessado vai para a raiz;
+  - propriedade de árvore de busca;
+  - capacidade respeitada;
+  - contadores;
+  - registro de zig-zig.
 
-Antes da entrega, devem ser desenvolvidos:
+## Processo de desenvolvimento
 
-- uma base de dados substancialmente maior;
-- uma fonte de dados adequada e documentada;
-- uma definição mais rigorosa da chave utilizada pela Skip List;
-- uma visualização mais clara das estruturas;
-- testes das estruturas;
-- modificações nos algoritmos clássicos que sejam justificadas pelo problema;
-- documentação do processo de desenvolvimento.
+1. Projeto-base com as três estruturas na forma clássica e 12 locais de
+   exemplo.
+2. Testes isolados das estruturas e implementação das modificações
+   descritas acima.
+3. Script de coleta do Wikidata e geração da base do Nordeste.
+4. Troca da chave provisória (`id`) da Skip List pela chave geográfica.
+5. Novas rotas no `app.py` e filtros na interface:
+   - busca por nome;
+   - intervalo de distância;
+   - categoria;
+   - nível;
+   - ponto de referência ao clicar no mapa.
+6. Melhoria das visualizações:
+   - Skip List com distância, total de nós e caminho destacado;
+   - Splay Tree com contadores e rotações.
 
-## Próximas etapas sugeridas
-
-1. Testar as três estruturas isoladamente.
-2. Definir a base geográfica definitiva.
-3. Substituir a chave provisória da Skip List por uma chave geográfica.
-4. Definir a modificação da Skip List relacionada à exploração do mapa.
-5. Definir a modificação da Splay Tree relacionada ao histórico/acesso.
-6. Melhorar a visualização da árvore.
-7. Adicionar filtros e busca.
-8. Aumentar a base de dados.
-9. Preparar testes e apresentação.
+O desenvolvimento contou com o auxílio de LLM (Claude), como permitido no
+enunciado.
