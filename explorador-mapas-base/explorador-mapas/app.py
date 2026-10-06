@@ -168,6 +168,7 @@ def api_local(local_id):
     return jsonify({
         "local": local_com_distancia(local),
         "splay": splay_tree.estrutura(),
+        "historico": splay_tree.historico(),
         "rotacoes": splay_tree.ultimas_rotacoes,
         "removido": removido.nome if removido else None,
     })
@@ -176,7 +177,10 @@ def api_local(local_id):
 @app.route("/api/splay")
 def api_splay():
     return jsonify({
-        "splay": splay_tree.estrutura()
+        "splay": splay_tree.estrutura(),
+        "historico": splay_tree.historico(),
+        "tamanho": splay_tree.tamanho,
+        "capacidade": splay_tree.capacidade,
     })
 
 

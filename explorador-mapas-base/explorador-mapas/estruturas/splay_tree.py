@@ -9,102 +9,182 @@ class NoSplay:
 
 class SplayTree:
     """
-    Árvore Afunilada (Splay Tree) usada como histórico de locais acessados.
+    Árvore Afunilada (Splay Tree) utilizada como histórico
+    adaptativo dos locais acessados pelo usuário.
 
-    Modificações em relação à versão clássica:
-    1. A árvore começa vazia. acessar() busca o local e, se ele não
-       estiver na árvore, o insere. Nos dois casos o local termina na
-       raiz, e cada nó guarda quantas vezes foi acessado.
-    2. A árvore tem capacidade limitada. Ao passar do limite, a folha
-       mais profunda é removida: como o splay sobe os nós usados e
-       empurra os pouco usados para baixo, essa folha aproxima o
-       "menos recentemente usado".
-    3. Os passos do último splay (zig, zig-zig, zig-zag) ficam
-       registrados para a visualização.
+    Adaptações para o Explorador de Mapas:
+
+    1. A árvore começa vazia.
+    2. Quando um local é acessado:
+       - se já estiver na árvore, é realizado o Splay e ele vai
+         para a raiz;
+       - se ainda não estiver, ele é inserido e fica na raiz.
+    3. Cada local registra a quantidade de acessos.
+    4. A árvore possui uma capacidade máxima.
+    5. Quando a capacidade é ultrapassada, uma folha mais profunda
+       é removida como heurística de descarte.
+    6. Os passos do Splay são registrados para visualização.
     """
 
     def __init__(self, capacidade=None):
         self.raiz = None
         self.capacidade = capacidade
         self.tamanho = 0
+
+        # Passos realizados no último acesso.
         self.ultimas_rotacoes = []
+
+        # Local removido quando a capacidade é excedida.
         self.ultimo_removido = None
+
+    # ============================================================
+    # ROTAÇÕES
+    # ============================================================
 
     def _rotacao_direita(self, x):
         y = x.esquerda
+
         x.esquerda = y.direita
         y.direita = x
+
         return y
 
     def _rotacao_esquerda(self, x):
         y = x.direita
+
         x.direita = y.esquerda
         y.esquerda = x
+
         return y
+
+    # ============================================================
+    # SPLAY
+    # ============================================================
 
     def _splay(self, raiz, chave):
         if raiz is None or raiz.chave == chave:
             return raiz
 
-        # Tipo do passo atual; vira zig-zig/zig-zag se houver rotação dupla.
-        passo = "zig"
+        # --------------------------------------------------------
+        # CHAVE ESTÁ NA SUBÁRVORE ESQUERDA
+        # --------------------------------------------------------
 
         if chave < raiz.chave:
+
             if raiz.esquerda is None:
                 return raiz
 
+            # -----------------------------
+            # ZIG-ZIG
+            # -----------------------------
+
             if chave < raiz.esquerda.chave:
+
                 raiz.esquerda.esquerda = self._splay(
-                    raiz.esquerda.esquerda, chave
+                    raiz.esquerda.esquerda,
+                    chave,
                 )
+
                 raiz = self._rotacao_direita(raiz)
-                passo = "zig-zig"
+
+                self.ultimas_rotacoes.append("zig-zig")
+
+            # -----------------------------
+            # ZIG-ZAG
+            # -----------------------------
 
             elif chave > raiz.esquerda.chave:
+
                 raiz.esquerda.direita = self._splay(
-                    raiz.esquerda.direita, chave
+                    raiz.esquerda.direita,
+                    chave,
                 )
 
                 if raiz.esquerda.direita is not None:
-                    raiz.esquerda = self._rotacao_esquerda(raiz.esquerda)
-                    passo = "zig-zag"
+                    raiz.esquerda = self._rotacao_esquerda(
+                        raiz.esquerda
+                    )
+
+                    self.ultimas_rotacoes.append("zig-zag")
+
+            # -----------------------------
+            # ZIG
+            # -----------------------------
 
             if raiz.esquerda is None:
-                # A segunda rotação não aconteceu: foi só uma (zig).
                 self.ultimas_rotacoes.append("zig")
                 return raiz
 
-            self.ultimas_rotacoes.append(passo)
+            self.ultimas_rotacoes.append("zig")
+
             return self._rotacao_direita(raiz)
 
+        # --------------------------------------------------------
+        # CHAVE ESTÁ NA SUBÁRVORE DIREITA
+        # --------------------------------------------------------
+
         else:
+
             if raiz.direita is None:
                 return raiz
 
+            # -----------------------------
+            # ZIG-ZIG
+            # -----------------------------
+
             if chave > raiz.direita.chave:
+
                 raiz.direita.direita = self._splay(
-                    raiz.direita.direita, chave
+                    raiz.direita.direita,
+                    chave,
                 )
+
                 raiz = self._rotacao_esquerda(raiz)
-                passo = "zig-zig"
+
+                self.ultimas_rotacoes.append("zig-zig")
+
+            # -----------------------------
+            # ZIG-ZAG
+            # -----------------------------
 
             elif chave < raiz.direita.chave:
+
                 raiz.direita.esquerda = self._splay(
-                    raiz.direita.esquerda, chave
+                    raiz.direita.esquerda,
+                    chave,
                 )
 
                 if raiz.direita.esquerda is not None:
-                    raiz.direita = self._rotacao_direita(raiz.direita)
-                    passo = "zig-zag"
+                    raiz.direita = self._rotacao_direita(
+                        raiz.direita
+                    )
+
+                    self.ultimas_rotacoes.append("zig-zag")
+
+            # -----------------------------
+            # ZIG
+            # -----------------------------
 
             if raiz.direita is None:
                 self.ultimas_rotacoes.append("zig")
                 return raiz
 
-            self.ultimas_rotacoes.append(passo)
+            self.ultimas_rotacoes.append("zig")
+
             return self._rotacao_esquerda(raiz)
 
+    # ============================================================
+    # INSERÇÃO
+    # ============================================================
+
     def inserir(self, chave, valor):
+        """
+        Insere um novo elemento.
+
+        A inserção utiliza o Splay clássico:
+        antes de inserir, a árvore é reorganizada em torno da chave.
+        """
+
         self.ultimas_rotacoes = []
 
         if self.raiz is None:
@@ -114,6 +194,7 @@ class SplayTree:
 
         self.raiz = self._splay(self.raiz, chave)
 
+        # Elemento já existe.
         if self.raiz.chave == chave:
             self.raiz.valor = valor
             return
@@ -121,18 +202,34 @@ class SplayTree:
         novo = NoSplay(chave, valor)
 
         if chave < self.raiz.chave:
-            novo.direita = self.raiz
+
             novo.esquerda = self.raiz.esquerda
+            novo.direita = self.raiz
+
             self.raiz.esquerda = None
+
         else:
-            novo.esquerda = self.raiz
+
             novo.direita = self.raiz.direita
+            novo.esquerda = self.raiz
+
             self.raiz.direita = None
 
         self.raiz = novo
         self.tamanho += 1
 
+    # ============================================================
+    # BUSCA
+    # ============================================================
+
     def buscar(self, chave):
+        """
+        Procura uma chave e realiza o Splay.
+
+        A busca não altera o contador de acessos.
+        O contador é responsabilidade de acessar().
+        """
+
         self.ultimas_rotacoes = []
 
         if self.raiz is None:
@@ -145,58 +242,146 @@ class SplayTree:
 
         return None
 
+    # ============================================================
+    # ACESSO
+    # ============================================================
+
     def acessar(self, chave, valor):
         """
-        MODIFICAÇÃO: registra o acesso a um local.
+        Operação principal da Splay Tree no projeto.
 
-        - Se o local já está na árvore: splay + incrementa o contador.
-        - Se não está: insere (a inserção também deixa o nó na raiz).
-        - Se passar da capacidade: remove a folha mais profunda.
+        Se o local já estiver na árvore:
+            - realiza o Splay;
+            - coloca o local na raiz;
+            - incrementa o número de acessos.
+
+        Se ainda não estiver:
+            - insere o local;
+            - o novo local fica na raiz.
+
+        Se a capacidade for excedida:
+            - remove uma folha mais profunda.
         """
+
+        self.ultimas_rotacoes = []
         self.ultimo_removido = None
 
-        if self.buscar(chave) is not None:
-            self.raiz.acessos += 1
+        # --------------------------------------------------------
+        # ÁRVORE VAZIA
+        # --------------------------------------------------------
+
+        if self.raiz is None:
+            self.raiz = NoSplay(chave, valor)
+            self.tamanho = 1
+
             return self.raiz.valor
 
-        rotacoes_busca = self.ultimas_rotacoes
-        self.inserir(chave, valor)
-        self.ultimas_rotacoes = rotacoes_busca + self.ultimas_rotacoes
+        # --------------------------------------------------------
+        # TENTAR ENCONTRAR O LOCAL
+        # --------------------------------------------------------
 
-        if self.capacidade is not None and self.tamanho > self.capacidade:
+        encontrado = self.buscar(chave)
+
+        if encontrado is not None:
+            # O buscar() já realizou o Splay.
+            self.raiz.acessos += 1
+
+            return self.raiz.valor
+
+        # Guardamos os passos da busca antes da inserção.
+        rotacoes_busca = list(self.ultimas_rotacoes)
+
+        # --------------------------------------------------------
+        # PRIMEIRO ACESSO
+        # --------------------------------------------------------
+
+        self.inserir(chave, valor)
+
+        rotacoes_insercao = list(self.ultimas_rotacoes)
+
+        self.ultimas_rotacoes = (
+            rotacoes_busca + rotacoes_insercao
+        )
+
+        # --------------------------------------------------------
+        # CONTROLE DE CAPACIDADE
+        # --------------------------------------------------------
+
+        if (
+            self.capacidade is not None
+            and self.tamanho > self.capacidade
+        ):
             self._remover_folha_mais_profunda()
 
         return self.raiz.valor
 
+    # ============================================================
+    # REMOÇÃO ADAPTADA
+    # ============================================================
+
     def _remover_folha_mais_profunda(self):
         """
-        MODIFICAÇÃO: descarte do nó com menor chance de ser reacessado.
+        Remove uma folha de maior profundidade.
 
-        Percorre a árvore guardando a folha de maior profundidade e o pai
-        dela, e então desliga essa folha do pai. A raiz (recém-acessada)
-        nunca é removida, pois há pelo menos dois nós quando isto é chamado.
+        Essa é uma heurística específica da aplicação.
+
+        A ideia é que a Splay coloca elementos acessados
+        recentemente próximos da raiz. Portanto, uma folha
+        muito profunda é um candidato ao descarte quando o
+        histórico ultrapassa a capacidade.
+
+        Importante:
+        profundidade NÃO significa necessariamente "menos acessado".
+        É apenas o critério de descarte adotado pela aplicação.
         """
+
+        if self.raiz is None:
+            return
+
         mais_funda = None
         pai_mais_funda = None
         maior_profundidade = -1
 
-        pilha = [(self.raiz, None, 0)]
+        pilha = [
+            (self.raiz, None, 0)
+        ]
 
         while pilha:
+
             no, pai, profundidade = pilha.pop()
 
-            if no.esquerda is None and no.direita is None:
+            # Encontramos uma folha.
+            if (
+                no.esquerda is None
+                and no.direita is None
+            ):
+
                 if profundidade > maior_profundidade:
                     maior_profundidade = profundidade
                     mais_funda = no
                     pai_mais_funda = pai
+
                 continue
 
             if no.direita is not None:
-                pilha.append((no.direita, no, profundidade + 1))
-            if no.esquerda is not None:
-                pilha.append((no.esquerda, no, profundidade + 1))
+                pilha.append(
+                    (
+                        no.direita,
+                        no,
+                        profundidade + 1,
+                    )
+                )
 
+            if no.esquerda is not None:
+                pilha.append(
+                    (
+                        no.esquerda,
+                        no,
+                        profundidade + 1,
+                    )
+                )
+
+        # A raiz não pode ser removida.
         if pai_mais_funda is None:
             return
 
@@ -208,19 +393,76 @@ class SplayTree:
         self.tamanho -= 1
         self.ultimo_removido = mais_funda.valor
 
+    # ============================================================
+    # HISTÓRICO
+    # ============================================================
+
+    def historico(self):
+        """
+        Retorna os locais atualmente presentes na Splay Tree,
+        ordenados pelo número de acessos decrescente.
+
+        Essa informação é usada para mostrar o histórico na
+        interface.
+        """
+
+        locais = []
+
+        def percorrer(no):
+            if no is None:
+                return
+
+            locais.append({
+                "chave": no.chave,
+                "nome": getattr(
+                    no.valor,
+                    "nome",
+                    str(no.valor),
+                ),
+                "acessos": no.acessos,
+            })
+
+            percorrer(no.esquerda)
+            percorrer(no.direita)
+
+        percorrer(self.raiz)
+
+        locais.sort(
+            key=lambda item: item["acessos"],
+            reverse=True,
+        )
+
+        return locais
+
+    # ============================================================
+    # PERCURSO EM ORDEM
+    # ============================================================
+
     def em_ordem(self):
-        """Chaves em ordem crescente (usado nos testes)."""
+        """
+        Retorna as chaves em ordem crescente.
+
+        Útil para testes e para verificar se a propriedade
+        da árvore binária de busca foi preservada.
+        """
+
         chaves = []
 
         def percorrer(no):
             if no is None:
                 return
+
             percorrer(no.esquerda)
             chaves.append(no.chave)
             percorrer(no.direita)
 
         percorrer(self.raiz)
+
         return chaves
+
+    # ============================================================
+    # REPRESENTAÇÃO PARA A INTERFACE
+    # ============================================================
 
     def _para_dict(self, no):
         if no is None:
@@ -228,7 +470,11 @@ class SplayTree:
 
         return {
             "chave": no.chave,
-            "nome": getattr(no.valor, "nome", str(no.valor)),
+            "nome": getattr(
+                no.valor,
+                "nome",
+                str(no.valor),
+            ),
             "acessos": no.acessos,
             "esquerda": self._para_dict(no.esquerda),
             "direita": self._para_dict(no.direita),
