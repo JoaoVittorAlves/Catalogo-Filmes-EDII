@@ -1,7 +1,7 @@
 """
 Monta as apresentações a partir dos modelos em apresentacao/modelos/.
 
-- v1.html: versão completa (22 slides).
+- v1.html: versão completa (20 slides).
 - v2.html: versão enxuta com respostas preparadas. Reaproveita o estilo e
   alguns slides da v1 através dos marcadores {{ESTILO_V1}} e {{SLIDE_V1:n}}.
 

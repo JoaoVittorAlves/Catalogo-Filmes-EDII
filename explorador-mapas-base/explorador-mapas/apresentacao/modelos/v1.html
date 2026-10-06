@@ -74,6 +74,7 @@ td { padding: 16px 20px 16px 0; border-bottom: 1px solid var(--line); vertical-a
 td:first-child { font-weight: 700; }
 .tag { display: inline-block; font-family: var(--mono); font-size: 17px; padding: 3px 10px; border-radius: 99px; background: var(--amber-soft); color: var(--ink); white-space: nowrap; }
 .tag.blue { background: #dbe6fd; }
+.card .tag { align-self: flex-start; }
 
 .shot { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
 .shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
@@ -144,7 +145,7 @@ svg .m { font-family: var(--mono); }
       </g>
     </svg>
   </div>
-  <div class="footer"><span>[Nomes dos integrantes]</span><span>Python · Flask · Leaflet · Wikidata</span></div>
+  <div class="footer"><span>Georgiana Maria e João Vittor de Araújo</span><span>Python · Flask · Leaflet · Wikidata</span></div>
 </section>
 
 <!-- 2. A aplicação -->
@@ -351,9 +352,9 @@ svg .m { font-family: var(--mono); }
     <g fill="#2563eb"><circle cx="820" cy="180" r="12"/><circle cx="1000" cy="180" r="12"/><circle cx="1100" cy="180" r="12"/></g>
   </svg>
   <div class="row">
-    <div class="card grow"><h3><span style="color:#c2870f">1 · Descida</span> O(log n)</h3><p class="small">Igual à busca clássica: desce pelos níveis até o último nó com distância &lt; mínimo.</p></div>
+    <div class="card grow"><h3><span style="color:#c2870f">1 · Descida</span> pelos níveis</h3><p class="small">Igual à busca clássica: desce até o último nó com distância &lt; mínimo. Com 5 níveis, uns 95 passos em média.</p></div>
     <div class="card grow"><h3><span style="color:var(--marker)">2 · Varredura</span> O(k)</h3><p class="small">Anda só no nível escolhido enquanto a distância ≤ máximo. Devolve os locais e o caminho.</p></div>
-    <div class="card grow" style="background:var(--ink);color:var(--paper);border-color:var(--ink)"><h3>14 nós</h3><p style="font-size:22px;color:#b8c4d3">visitados na descida para chegar a 100 km de João Pessoa, contra centenas numa lista simples.</p></div>
+    <div class="card grow" style="background:var(--ink);color:var(--paper);border-color:var(--ink)"><h3>14 nós</h3><p style="font-size:22px;color:#b8c4d3">visitados na descida para chegar a 100 km de João Pessoa. Uma lista simples passaria pelos 164 locais mais próximos.</p></div>
   </div>
   <div class="footer"><span>SkipList.buscar_intervalo(minimo, maximo, nivel)</span><span>08</span></div>
 </section>
@@ -371,6 +372,7 @@ svg .m { font-family: var(--mono); }
         <tr><td>zig-zig</td><td>nó e pai do mesmo lado</td></tr>
         <tr><td>zig-zag</td><td>nó e pai de lados opostos</td></tr>
       </table>
+      <p class="small">O resultado é que os locais usados recentemente ficam perto da raiz.</p>
     </div>
     <svg viewBox="0 0 640 380" width="640" height="380" aria-label="Zig-zig: g, p, x em linha; depois x na raiz com p e g abaixo">
       <defs><marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b6878"/></marker></defs>
@@ -398,12 +400,12 @@ svg .m { font-family: var(--mono); }
     <div class="card grow">
       <span class="tag">1</span>
       <h3>Cache antes da base</h3>
-      <p class="small"><code>acessar(id, buscar_na_base)</code> procura primeiro na árvore. Achou: splay e contador + 1, sem consultar os 2.580 locais. Não achou: busca linear na base e insere. Nos dois casos o local termina na raiz.</p>
+      <p class="small">Quando o usuário clica em ‘Ver local’, a aplicação procura o local primeiro na árvore. Achou: o splay leva o local para a raiz, o contador aumenta, e os 2.580 locais nem são consultados. Não achou: busca linear na base e insere. Nos dois casos o local termina na raiz.</p>
     </div>
     <div class="card grow" style="border:2px solid var(--ink)">
       <span class="tag">2</span>
       <h3>Descarta a folha mais profunda</h3>
-      <p class="small">O splay sobe o que é usado e empurra o resto para baixo. A folha mais funda aproxima o “menos recentemente usado”, sem estrutura extra. Também mantém a árvore pequena para desenhar.</p>
+      <p class="small">A capacidade é limitada a 15 nós, como todo cache. Quando entra o 16º, removemos a folha mais profunda. O splay sobe o que é usado e empurra o resto para baixo. A folha mais funda aproxima o “menos recentemente usado”, sem estrutura extra. Também mantém a árvore pequena para desenhar.</p>
     </div>
     <div class="card grow">
       <span class="tag">3</span>
@@ -512,7 +514,7 @@ python app.py
   <div class="row grow">
     <div class="col" style="flex:1;justify-content:center">
       <h2>Um clique em Salvador muda todas as chaves</h2>
-      <p class="lead" style="font-size:27px">A distância de cada local até o novo ponto é recalculada e a Skip List é reconstruída, em O(n log n). Com o raio em 30 km, sobram os locais de Salvador e da Ilha de Itaparica.</p>
+      <p class="lead" style="font-size:27px">A distância de cada local até o novo ponto é recalculada e a Skip List é reconstruída: 2.580 inserções em cerca de 40 ms. Com o raio em 30 km, sobram os locais de Salvador e da Ilha de Itaparica.</p>
     </div>
     <figure class="shot" style="margin:0;width:620px"><div class="frame"><img src="{{IMG:08-referencia-salvador.png}}" alt="Mapa de Salvador com os locais até 30 km do novo ponto de referência"></div></figure>
   </div>
@@ -551,33 +553,7 @@ python app.py
       <text x="1290" y="200" text-anchor="middle">a árvore passa</text><text x="1290" y="225" text-anchor="middle">a ter função real</text>
     </g>
   </svg>
-  <p style="font-size:26px">Critério que guiou tudo: manter o projeto simples o bastante para ser explicado. A árvore continua desenhada em texto, e cada modificação é pequena.</p>
-  <p class="small">Desenvolvido com auxílio de LLM (Claude), como o enunciado permite.</p>
   <div class="footer"><span>PLANO.md · README.md</span><span>19</span></div>
-</section>
-
-<!-- 20. Perguntas 1 -->
-<section class="slide" data-title="Perguntas para discussão (1)">
-  <div class="eyebrow">Perguntas para discussão</div>
-  <h2>Para discutir: Skip List</h2>
-  <div class="qa">
-    <div class="q"><h3>Se o nível não é mais sorteado, a busca continua O(log n)?</h3><button type="button" id="q1" aria-expanded="false">Mostrar resposta</button><p class="a" hidden>Não, mas por causa do limite de 5 níveis, e não da relevância. Medimos: 95 passos em média com relevância, 92 com sorteio e os mesmos 5 níveis, 23 com 12 níveis, e 1.290 numa lista simples. Escolhemos 5 níveis porque são os níveis de zoom. Aumentar <code>max_nivel</code> devolveria o O(log n) sem mudar a ideia.</p></div>
-    <div class="q"><h3>Por que reconstruir a Skip List inteira ao mudar a referência?</h3><button type="button" id="q2" aria-expanded="false">Mostrar resposta</button><p class="a" hidden>A chave é a distância até a referência. Mudou o ponto, mudaram todas as chaves e a ordem. Reinserir 2.580 locais é O(n log n) e leva milissegundos. Uma estrutura espacial evitaria isso, mas não está entre as vistas em aula.</p></div>
-    <div class="q"><h3>Qual o custo de buscar_intervalo?</h3><button type="button" id="q3" aria-expanded="false">Mostrar resposta</button><p class="a" hidden>Descida + k: a descida até o início da faixa, mais os k nós percorridos no nível escolhido. A descida seria O(log n) com níveis suficientes; com nossos 5 níveis, custa em média uns 95 passos. Em níveis altos, k é menor, porque há menos nós.</p></div>
-  </div>
-  <div class="footer"><span>Clique para revelar</span><span>20</span></div>
-</section>
-
-<!-- 21. Perguntas 2 -->
-<section class="slide" data-title="Perguntas para discussão (2)">
-  <div class="eyebrow">Perguntas para discussão</div>
-  <h2>Para discutir: Splay Tree e Lista</h2>
-  <div class="qa">
-    <div class="q"><h3>A folha mais profunda é sempre o local menos recentemente usado?</h3><button type="button" id="q4" aria-expanded="false">Mostrar resposta</button><p class="a" hidden>Não, é uma aproximação. O splay tende a afundar o que não é acessado, mas uma rotação pode descer um nó recente. O exato exigiria guardar a hora de cada acesso e procurar o mínimo, ou manter uma lista à parte.</p></div>
-    <div class="q"><h3>Por que Lista com Movimentação ao Início para categorias, e não para locais?</h3><button type="button" id="q5" aria-expanded="false">Mostrar resposta</button><p class="a" hidden>São só 8 categorias: a busca linear é barata e a ordem por uso recente vira um recurso da interface. Com 2.580 locais, a busca O(n) a cada clique seria cara; para eles usamos a Skip List e a Splay Tree.</p></div>
-    <div class="q"><h3>A busca por nome usa qual estrutura? Dá para melhorar?</h3><button type="button" id="q6" aria-expanded="false">Mostrar resposta</button><p class="a" hidden>Ela filtra, por varredura linear, o resultado que a Skip List devolveu. É a parte menos eficiente do projeto. Uma árvore de busca ordenada pelo nome permitiria achar prefixos em O(log n).</p></div>
-  </div>
-  <div class="footer"><span>Clique para revelar</span><span>21</span></div>
 </section>
 
 <!-- 22. Encerramento -->
@@ -587,7 +563,7 @@ python app.py
   <h1 style="font-size:88px">Obrigado.<br>Perguntas?</h1>
   <p class="lead" style="color:var(--ink)">Três estruturas, três modificações justificadas pelo mapa e uma interface que mostra cada uma delas funcionando.</p>
   <div class="spacer"></div>
-  <div class="footer" style="color:var(--ink)"><span>[Nomes dos integrantes]</span><span>Explorador de Mapas · EDII 2026</span></div>
+  <div class="footer" style="color:var(--ink)"><span>Georgiana Maria e João Vittor de Araújo</span><span>Explorador de Mapas · EDII 2026</span></div>
 </section>
 
 </div>
