@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from estruturas.lista_mov_inicio import ListaMovimentacaoInicio
 from estruturas.skip_list import SkipList
-from estruturas.splay_tree import SplayTree
+from estruturas.splay_tree import NoSplay, SplayTree
 
 
 class TestListaMovimentacaoInicio(unittest.TestCase):
@@ -81,21 +81,25 @@ class TestSkipList(unittest.TestCase):
                 self.assertEqual(obtido, esperado)
 
 
+def base(chave):
+    """Base de teste: todo local existe e vale "local <chave>"."""
+    return f"local {chave}"
+
+
 class TestSplayTree(unittest.TestCase):
     def test_acessado_vai_para_raiz(self):
         arvore = SplayTree()
         for chave in [50, 30, 70, 20, 40, 60, 80]:
-            arvore.acessar(chave, f"local {chave}")
+            arvore.acessar(chave, base)
         for chave in [20, 80, 40, 50]:
-            arvore.acessar(chave, f"local {chave}")
+            arvore.acessar(chave, base)
             self.assertEqual(arvore.raiz.chave, chave)
 
     def test_propriedade_de_arvore_de_busca(self):
         random.seed(7)
         arvore = SplayTree()
         for _ in range(200):
-            chave = random.randint(1, 60)
-            arvore.acessar(chave, chave)
+            arvore.acessar(random.randint(1, 60), base)
         chaves = arvore.em_ordem()
         self.assertEqual(chaves, sorted(set(chaves)))
 
@@ -104,27 +108,68 @@ class TestSplayTree(unittest.TestCase):
         arvore = SplayTree(capacidade=10)
         for _ in range(300):
             chave = random.randint(1, 100)
-            arvore.acessar(chave, chave)
+            arvore.acessar(chave, base)
             self.assertLessEqual(arvore.tamanho, 10)
             self.assertEqual(len(arvore.em_ordem()), arvore.tamanho)
             self.assertEqual(arvore.raiz.chave, chave)
 
     def test_contador_de_acessos(self):
         arvore = SplayTree()
-        arvore.acessar(1, "a")
-        arvore.acessar(2, "b")
-        arvore.acessar(1, "a")
-        arvore.acessar(1, "a")
+        for chave in [1, 2, 1, 1]:
+            arvore.acessar(chave, base)
         self.assertEqual(arvore.raiz.chave, 1)
         self.assertEqual(arvore.raiz.acessos, 3)
 
-    def test_registro_de_rotacoes(self):
+    def test_cache_so_consulta_a_base_na_falha(self):
+        consultas = []
+
+        def base_contada(chave):
+            consultas.append(chave)
+            return f"local {chave}"
+
+        arvore = SplayTree()
+        arvore.acessar(5, base_contada)
+        self.assertEqual(arvore.ultima_origem, "base")
+        arvore.acessar(8, base_contada)
+        arvore.acessar(5, base_contada)
+        self.assertEqual(arvore.ultima_origem, "cache")
+        # A base foi consultada só nos dois primeiros acessos.
+        self.assertEqual(consultas, [5, 8])
+
+    def test_local_inexistente_nao_entra_na_arvore(self):
+        arvore = SplayTree()
+        arvore.acessar(1, base)
+        self.assertIsNone(arvore.acessar(99, lambda chave: None))
+        self.assertEqual(arvore.em_ordem(), [1])
+
+    def test_registro_zig_zig(self):
         arvore = SplayTree()
         for chave in [1, 2, 3]:
-            arvore.acessar(chave, chave)
-        # Árvore em "linha": 3 -> 2 -> 1. Buscar 1 exige um zig-zig.
-        arvore.acessar(1, 1)
+            arvore.acessar(chave, base)
+        # Árvore em "linha": 3 -> 2 -> 1. Um único passo zig-zig.
+        arvore.acessar(1, base)
         self.assertEqual(arvore.ultimas_rotacoes, ["zig-zig"])
+
+    def test_registro_zig_e_zig_zag(self):
+        # Árvore montada à mão:   3
+        #                        /
+        #                       1
+        #                        \
+        #                         2
+        arvore = SplayTree()
+        arvore.raiz = NoSplay(3, "c")
+        arvore.raiz.esquerda = NoSplay(1, "a")
+        arvore.raiz.esquerda.direita = NoSplay(2, "b")
+        arvore.tamanho = 3
+
+        # 2 e o pai (1) estão em lados opostos: um único zig-zag.
+        arvore.buscar(2)
+        self.assertEqual(arvore.ultimas_rotacoes, ["zig-zag"])
+        self.assertEqual(arvore.raiz.chave, 2)
+
+        # Agora 1 é filho da raiz: um único zig.
+        arvore.buscar(1)
+        self.assertEqual(arvore.ultimas_rotacoes, ["zig"])
 
 
 if __name__ == "__main__":
