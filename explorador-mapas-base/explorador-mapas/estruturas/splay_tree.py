@@ -9,16 +9,17 @@ class NoSplay:
 
 class SplayTree:
     """
-    Árvore Afunilada (Splay Tree) utilizada como histórico
+    Árvore Afunilada (Splay Tree) utilizada como cache e histórico
     adaptativo dos locais acessados pelo usuário.
 
     Adaptações para o Explorador de Mapas:
 
     1. A árvore começa vazia.
     2. Quando um local é acessado:
-       - se já estiver na árvore, é realizado o Splay e ele vai
-         para a raiz;
-       - se ainda não estiver, ele é inserido e fica na raiz.
+       - se já estiver na árvore (acerto no cache), é realizado o
+         Splay, ele vai para a raiz e a base não é consultada;
+       - se ainda não estiver, ele é buscado na base, inserido e
+         fica na raiz.
     3. Cada local registra a quantidade de acessos.
     4. A árvore possui uma capacidade máxima.
     5. Quando a capacidade é ultrapassada, uma folha mais profunda
@@ -36,6 +37,9 @@ class SplayTree:
 
         # Local removido quando a capacidade é excedida.
         self.ultimo_removido = None
+
+        # De onde veio o último local acessado: "cache" ou "base".
+        self.ultima_origem = None
 
     # ============================================================
     # ROTAÇÕES
@@ -62,8 +66,22 @@ class SplayTree:
     # ============================================================
 
     def _splay(self, raiz, chave):
+        """
+        Cada chamada faz UM passo do Splay e registra UM nome:
+
+        - "zig-zig": duas rotações, nó e pai do mesmo lado;
+        - "zig-zag": duas rotações, nó e pai em lados opostos;
+        - "zig": uma rotação só.
+
+        A segunda rotação de um zig-zig/zig-zag faz parte do mesmo
+        passo, por isso não é registrada separadamente como "zig".
+        """
         if raiz is None or raiz.chave == chave:
             return raiz
+
+        # Nome do passo atual. Vira zig-zig ou zig-zag se houver
+        # rotação dupla.
+        passo = "zig"
 
         # --------------------------------------------------------
         # CHAVE ESTÁ NA SUBÁRVORE ESQUERDA
@@ -87,7 +105,7 @@ class SplayTree:
 
                 raiz = self._rotacao_direita(raiz)
 
-                self.ultimas_rotacoes.append("zig-zig")
+                passo = "zig-zig"
 
             # -----------------------------
             # ZIG-ZAG
@@ -105,17 +123,18 @@ class SplayTree:
                         raiz.esquerda
                     )
 
-                    self.ultimas_rotacoes.append("zig-zag")
+                    passo = "zig-zag"
 
             # -----------------------------
-            # ZIG
+            # SEGUNDA ROTAÇÃO (OU ZIG)
             # -----------------------------
 
             if raiz.esquerda is None:
+                # Só a primeira rotação aconteceu: conta como zig.
                 self.ultimas_rotacoes.append("zig")
                 return raiz
 
-            self.ultimas_rotacoes.append("zig")
+            self.ultimas_rotacoes.append(passo)
 
             return self._rotacao_direita(raiz)
 
@@ -141,7 +160,7 @@ class SplayTree:
 
                 raiz = self._rotacao_esquerda(raiz)
 
-                self.ultimas_rotacoes.append("zig-zig")
+                passo = "zig-zig"
 
             # -----------------------------
             # ZIG-ZAG
@@ -159,17 +178,18 @@ class SplayTree:
                         raiz.direita
                     )
 
-                    self.ultimas_rotacoes.append("zig-zag")
+                    passo = "zig-zag"
 
             # -----------------------------
-            # ZIG
+            # SEGUNDA ROTAÇÃO (OU ZIG)
             # -----------------------------
 
             if raiz.direita is None:
+                # Só a primeira rotação aconteceu: conta como zig.
                 self.ultimas_rotacoes.append("zig")
                 return raiz
 
-            self.ultimas_rotacoes.append("zig")
+            self.ultimas_rotacoes.append(passo)
 
             return self._rotacao_esquerda(raiz)
 
@@ -246,38 +266,37 @@ class SplayTree:
     # ACESSO
     # ============================================================
 
-    def acessar(self, chave, valor):
+    def acessar(self, chave, carregar):
         """
-        Operação principal da Splay Tree no projeto.
+        Operação principal da Splay Tree no projeto: a árvore funciona
+        como CACHE dos locais acessados recentemente.
 
-        Se o local já estiver na árvore:
+        `carregar` é uma função que busca o local na base completa.
+        Ela só é chamada quando o local não está na árvore.
+
+        Se o local já estiver na árvore (acerto no cache):
             - realiza o Splay;
             - coloca o local na raiz;
-            - incrementa o número de acessos.
+            - incrementa o número de acessos;
+            - a base NÃO é consultada.
 
-        Se ainda não estiver:
-            - insere o local;
-            - o novo local fica na raiz.
+        Se ainda não estiver (falha no cache):
+            - busca o local na base com carregar(chave);
+            - insere o local, que fica na raiz.
 
         Se a capacidade for excedida:
             - remove uma folha mais profunda.
+
+        Retorna o local, ou None se ele não existir na base.
+        `ultima_origem` diz de onde ele veio: "cache" ou "base".
         """
 
         self.ultimas_rotacoes = []
         self.ultimo_removido = None
+        self.ultima_origem = None
 
         # --------------------------------------------------------
-        # ÁRVORE VAZIA
-        # --------------------------------------------------------
-
-        if self.raiz is None:
-            self.raiz = NoSplay(chave, valor)
-            self.tamanho = 1
-
-            return self.raiz.valor
-
-        # --------------------------------------------------------
-        # TENTAR ENCONTRAR O LOCAL
+        # 1. PROCURAR NO CACHE (A PRÓPRIA ÁRVORE)
         # --------------------------------------------------------
 
         encontrado = self.buscar(chave)
@@ -285,6 +304,7 @@ class SplayTree:
         if encontrado is not None:
             # O buscar() já realizou o Splay.
             self.raiz.acessos += 1
+            self.ultima_origem = "cache"
 
             return self.raiz.valor
 
@@ -292,7 +312,18 @@ class SplayTree:
         rotacoes_busca = list(self.ultimas_rotacoes)
 
         # --------------------------------------------------------
-        # PRIMEIRO ACESSO
+        # 2. FALHA NO CACHE: BUSCAR NA BASE
+        # --------------------------------------------------------
+
+        valor = carregar(chave)
+
+        if valor is None:
+            return None
+
+        self.ultima_origem = "base"
+
+        # --------------------------------------------------------
+        # 3. PRIMEIRO ACESSO: INSERIR NA ÁRVORE
         # --------------------------------------------------------
 
         self.inserir(chave, valor)

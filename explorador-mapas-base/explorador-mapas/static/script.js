@@ -153,7 +153,12 @@ async function selecionarLocal(id) {
         <p><strong>Relevância:</strong> ${local.relevancia} artigos na Wikipédia</p>
     `;
 
-    let info = `Rotações do último splay: ${dados.rotacoes.join(" → ") || "nenhuma"}.`;
+    // Origem do local: cache (Splay Tree) ou busca linear na base.
+    let info = dados.origem === "cache"
+        ? "Encontrado no cache (Splay Tree): a base não foi consultada. "
+        : "Não estava no cache: buscado na base e inserido na árvore. ";
+
+    info += `Rotações do último splay: ${dados.rotacoes.join(" → ") || "nenhuma"}.`;
 
     if (dados.removido) {
         info += ` Capacidade excedida: "${dados.removido}" (folha mais profunda) foi removido.`;

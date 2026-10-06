@@ -1,0 +1,427 @@
+<title>Explorador de Mapas · Versão Enxuta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+{{ESTILO_V1}}
+
+/* Versão 2: painel de respostas preparadas ao lado de cada estrutura. */
+:root { --note: #fbf4df; --note-line: #e8d49a; --note-ink: #8a5a00; }
+.qa-panel { background: var(--note); border: 1px solid var(--note-line); border-radius: 14px; padding: 20px 26px 22px; display: flex; flex-direction: column; gap: 0; min-width: 0; }
+.qa-panel .lbl { font-family: var(--mono); font-size: 16px; letter-spacing: .12em; text-transform: uppercase; color: var(--note-ink); padding-bottom: 10px; }
+.qa-panel .qi { display: flex; flex-direction: column; gap: 4px; padding: 12px 0; border-top: 1px solid var(--note-line); }
+.qa-panel .qi b { font-size: 20px; line-height: 1.3; }
+.qa-panel .qi .a { font-size: 18px; line-height: 1.4; color: #4d5868; }
+.qa-panel.cols { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 28px; align-content: start; }
+.qa-panel.cols .lbl { grid-column: 1 / -1; }
+.qa-panel.cols2 { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 32px; align-content: start; }
+.qa-panel.cols2 .qi { padding: 18px 0 22px; }
+.qa-panel.cols2 .lbl { grid-column: 1 / -1; }
+.sem-respostas .qa-panel .a { visibility: hidden; }
+.mini td, .mini th { font-size: 20px; padding-top: 10px; padding-bottom: 10px; }
+.mini th { font-size: 15px; }
+</style>
+
+<div class="viewport" id="viewport">
+<div class="stage" id="stage">
+
+<!-- 1. Capa -->
+<section class="slide dark" data-title="Capa">
+  <div class="eyebrow">Estrutura de Dados e Algoritmos II · 2026</div>
+  <div class="row grow" style="align-items:center">
+    <div class="col" style="flex:1.25; gap:28px">
+      <h1>Explorador<br>de Mapas</h1>
+      <p class="lead">Pontos de interesse do Nordeste organizados por uma Lista com Movimentação ao Início, uma Skip List e uma Splay Tree.</p>
+      <p class="mono" style="font-size:20px;color:#9fb0c4;letter-spacing:.04em">2.580 locais · 9 estados · 915 imagens · 3 estruturas</p>
+    </div>
+    <svg viewBox="0 0 680 380" width="640" height="358" aria-label="Níveis da Skip List: 2580, 1290, 645, 323 e 162 nós">
+      <g fill="#8193a9" font-size="15" class="m">
+        <text x="0" y="45">nível 4 · 162</text><text x="0" y="115">nível 3 · 323</text><text x="0" y="185">nível 2 · 645</text><text x="0" y="255">nível 1 · 1.290</text><text x="0" y="325">nível 0 · 2.580</text>
+      </g>
+      <g transform="translate(130,0)">
+        <g fill="none" stroke="#2c4568" stroke-width="2"><line x1="20" y1="40" x2="540" y2="40"/><line x1="20" y1="110" x2="540" y2="110"/><line x1="20" y1="180" x2="540" y2="180"/><line x1="20" y1="250" x2="540" y2="250"/><line x1="20" y1="320" x2="540" y2="320"/></g>
+        <g fill="#f3c14b"><circle cx="60" cy="40" r="9"/><circle cx="380" cy="40" r="9"/></g>
+        <g fill="#7fa6f5"><circle cx="60" cy="110" r="9"/><circle cx="220" cy="110" r="9"/><circle cx="380" cy="110" r="9"/><circle cx="500" cy="110" r="9"/><circle cx="60" cy="180" r="9"/><circle cx="140" cy="180" r="9"/><circle cx="220" cy="180" r="9"/><circle cx="300" cy="180" r="9"/><circle cx="380" cy="180" r="9"/><circle cx="460" cy="180" r="9"/><circle cx="500" cy="180" r="9"/></g>
+        <g fill="#4d6a92"><circle cx="60" cy="250" r="7"/><circle cx="100" cy="250" r="7"/><circle cx="140" cy="250" r="7"/><circle cx="180" cy="250" r="7"/><circle cx="220" cy="250" r="7"/><circle cx="260" cy="250" r="7"/><circle cx="300" cy="250" r="7"/><circle cx="340" cy="250" r="7"/><circle cx="380" cy="250" r="7"/><circle cx="420" cy="250" r="7"/><circle cx="460" cy="250" r="7"/><circle cx="500" cy="250" r="7"/>
+          <circle cx="40" cy="320" r="5"/><circle cx="60" cy="320" r="5"/><circle cx="80" cy="320" r="5"/><circle cx="100" cy="320" r="5"/><circle cx="120" cy="320" r="5"/><circle cx="140" cy="320" r="5"/><circle cx="160" cy="320" r="5"/><circle cx="180" cy="320" r="5"/><circle cx="200" cy="320" r="5"/><circle cx="220" cy="320" r="5"/><circle cx="240" cy="320" r="5"/><circle cx="260" cy="320" r="5"/><circle cx="280" cy="320" r="5"/><circle cx="300" cy="320" r="5"/><circle cx="320" cy="320" r="5"/><circle cx="340" cy="320" r="5"/><circle cx="360" cy="320" r="5"/><circle cx="380" cy="320" r="5"/><circle cx="400" cy="320" r="5"/><circle cx="420" cy="320" r="5"/><circle cx="440" cy="320" r="5"/><circle cx="460" cy="320" r="5"/><circle cx="480" cy="320" r="5"/><circle cx="500" cy="320" r="5"/><circle cx="520" cy="320" r="5"/></g>
+      </g>
+    </svg>
+  </div>
+  <div class="footer"><span>[Nomes dos integrantes]</span><span>Python · Flask · Leaflet · Wikidata</span></div>
+</section>
+
+<!-- 2. Organização -->
+{{SLIDE_V1:3}}
+
+<!-- 3. Ação -> estrutura -->
+{{SLIDE_V1:4}}
+
+<!-- 4. Lista MTF -->
+<section class="slide" data-title="Lista com Movimentação ao Início">
+  <div class="eyebrow">Estrutura linear · categorias</div>
+  <h2>Lista com Movimentação ao Início</h2>
+  <div class="row grow">
+    <div class="col" style="flex:1.05">
+      <p style="font-size:24px;line-height:1.45">Lista encadeada simples com as 8 categorias. <code>acessar()</code> percorre a lista, desliga o nó encontrado e o religa no início. Os botões aparecem na ordem da lista, com o contador de acessos.</p>
+      <svg viewBox="0 0 640 330" width="660" height="340" aria-label="Antes: Parques, Praças, Praias, Igrejas. Depois de acessar Praias: Praias, Parques, Praças, Igrejas">
+        <defs><marker id="b2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b6878"/></marker></defs>
+        <text x="0" y="24" class="m" font-size="17" fill="#5b6878" letter-spacing="2">ANTES</text>
+        <g font-size="19" font-weight="700" fill="#13233a">
+          <rect x="0" y="40" width="130" height="56" rx="8" fill="#fff" stroke="#13233a" stroke-width="2"/><text x="65" y="75" text-anchor="middle">Parques</text>
+          <rect x="165" y="40" width="130" height="56" rx="8" fill="#fff" stroke="#13233a" stroke-width="2"/><text x="230" y="75" text-anchor="middle">Praças</text>
+          <rect x="330" y="40" width="130" height="56" rx="8" fill="#fde9a8" stroke="#13233a" stroke-width="2"/><text x="395" y="75" text-anchor="middle">Praias</text>
+          <rect x="495" y="40" width="130" height="56" rx="8" fill="#fff" stroke="#13233a" stroke-width="2"/><text x="560" y="75" text-anchor="middle">Igrejas</text>
+        </g>
+        <g stroke="#5b6878" stroke-width="2.5" fill="none" marker-end="url(#b2)"><line x1="130" y1="68" x2="163" y2="68"/><line x1="295" y1="68" x2="328" y2="68"/><line x1="460" y1="68" x2="493" y2="68"/></g>
+        <path d="M395 102 C395 180, 65 140, 65 222" stroke="#f3c14b" stroke-width="4" fill="none" marker-end="url(#b2)"/>
+        <text x="430" y="176" class="m" font-size="17" fill="#13233a">acessar("Praias")</text>
+        <text x="625" y="214" text-anchor="end" class="m" font-size="17" fill="#5b6878" letter-spacing="2">DEPOIS</text>
+        <g font-size="19" font-weight="700" fill="#13233a">
+          <rect x="0" y="230" width="130" height="56" rx="8" fill="#fde9a8" stroke="#13233a" stroke-width="2"/><text x="65" y="265" text-anchor="middle">Praias</text>
+          <rect x="165" y="230" width="130" height="56" rx="8" fill="#fff" stroke="#13233a" stroke-width="2"/><text x="230" y="265" text-anchor="middle">Parques</text>
+          <rect x="330" y="230" width="130" height="56" rx="8" fill="#fff" stroke="#13233a" stroke-width="2"/><text x="395" y="265" text-anchor="middle">Praças</text>
+          <rect x="495" y="230" width="130" height="56" rx="8" fill="#fff" stroke="#13233a" stroke-width="2"/><text x="560" y="265" text-anchor="middle">Igrejas</text>
+        </g>
+        <g stroke="#5b6878" stroke-width="2.5" fill="none" marker-end="url(#b2)"><line x1="130" y1="258" x2="163" y2="258"/><line x1="295" y1="258" x2="328" y2="258"/><line x1="460" y1="258" x2="493" y2="258"/></g>
+        <text x="0" y="322" font-size="19" fill="#5b6878">Os demais mantêm a ordem relativa.</text>
+      </svg>
+    </div>
+    <div class="qa-panel" style="flex:.95">
+      <div class="lbl">Se o professor perguntar</div>
+      <div class="qi"><b>Por que essa lista para as categorias?</b><span class="a">São só 8 categorias: a busca linear é barata, e a ordem por uso recente vira um recurso da interface. As mais usadas ficam à mão.</span></div>
+      <div class="qi"><b>Qual o custo de acessar?</b><span class="a">O(n) para achar o nó e O(1) para religá-lo no início. O pior caso é a categoria estar no fim da lista.</span></div>
+      <div class="qi"><b>Vocês modificaram esse algoritmo?</b><span class="a">Não: é o clássico, só com um contador de acessos por nó. As modificações estão na Skip List e na Splay Tree.</span></div>
+      <div class="qi"><b>Por que não usar para os locais?</b><span class="a">Com 2.580 locais, cada clique custaria uma busca O(n). Para eles usamos a Skip List e a Splay Tree.</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>estruturas/lista_mov_inicio.py</span><span>00</span></div>
+</section>
+
+<!-- 5. Skip List -->
+<section class="slide" data-title="Skip List: chave e níveis">
+  <div class="eyebrow">Estrutura linear com níveis · locais</div>
+  <h2>Skip List: distância como chave, relevância como nível</h2>
+  <div class="row grow">
+    <div class="col" style="flex:1.05">
+      <div class="card" style="padding:22px 28px">
+        <h3>Chave <code style="font-size:26px">(distância_km, id)</code></h3>
+        <p class="small">Distância até o ponto de referência pela fórmula de Haversine. O <code>id</code> desempata. Clicar no mapa muda a referência e reconstrói a lista.</p>
+      </div>
+      <div class="card" style="padding:22px 28px;border:2px solid var(--ink)">
+        <span class="tag" style="align-self:flex-start">modificação 1</span>
+        <h3>Nível pela relevância, e não por sorteio</h3>
+        <p class="small">Clássico: moeda com p = 1/2. Nosso: os 50% mais citados na Wikipédia chegam ao nível 1, 25% ao 2, 12,5% ao 3, 6,25% ao 4. Mesma proporção, mas sobem os mais importantes: os níveis viram o zoom do mapa.</p>
+        <p class="mono" style="font-size:19px">2.580 → 1.290 → 645 → 323 → 162 nós</p>
+      </div>
+    </div>
+    <div class="qa-panel" style="flex:.95">
+      <div class="lbl">Se o professor perguntar</div>
+      <div class="qi"><b>A busca continua O(log n)?</b><span class="a">Não, por causa do limite de 5 níveis (um por zoom). Medimos 95 passos em média; sorteio com 5 níveis dá 92, com 12 níveis 23, e uma lista 1.290. A relevância não piora.</span></div>
+      <div class="qi"><b>Por que relevância e não sorteio?</b><span class="a">No sorteio, o nível 4 mostraria 162 locais aleatórios. Com a relevância, mostra Lençóis Maranhenses, Serra da Capivara, Porto de Galinhas.</span></div>
+      <div class="qi"><b>Por que o id na chave?</b><span class="a">Dois locais podem estar à mesma distância. Com o id, toda chave é única e a ordem é total.</span></div>
+      <div class="qi"><b>E ao mudar a referência?</b><span class="a">Todas as chaves mudam. Reinserimos os 2.580 locais: O(n log n), milissegundos.</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>SkipList.inserir(chave, local, nivel) · definir_niveis_por_relevancia()</span><span>00</span></div>
+</section>
+
+<!-- 6. Busca por intervalo -->
+<section class="slide" data-title="Skip List: busca por intervalo">
+  <div class="eyebrow">Modificação 2 · Skip List</div>
+  <h2>Busca por intervalo de distância em um nível</h2>
+  <svg viewBox="0 0 1392 300" width="1392" height="290" aria-label="Descida pelos níveis até 100 km e varredura no nível escolhido até 200 km">
+    <defs>
+      <marker id="b3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c2870f"/></marker>
+      <marker id="b4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
+    </defs>
+    <g stroke="#d3dbd8" stroke-width="2"><line x1="80" y1="30" x2="1380" y2="30"/><line x1="80" y1="95" x2="1380" y2="95"/><line x1="80" y1="160" x2="1380" y2="160"/><line x1="80" y1="225" x2="1380" y2="225"/></g>
+    <g class="m" font-size="17" fill="#5b6878"><text x="0" y="36">nível 3</text><text x="0" y="101">nível 2</text><text x="0" y="166">nível 1</text><text x="0" y="231">nível 0</text></g>
+    <rect x="760" y="12" width="420" height="232" fill="#cfe5ea" opacity=".55"/>
+    <text x="770" y="268" class="m" font-size="17" fill="#13233a">100 km</text><text x="1170" y="268" class="m" font-size="17" fill="#13233a" text-anchor="end">200 km</text>
+    <g fill="#13233a">
+      <circle cx="120" cy="30" r="10"/><circle cx="520" cy="30" r="10"/><circle cx="1000" cy="30" r="10"/>
+      <circle cx="120" cy="95" r="10"/><circle cx="360" cy="95" r="10"/><circle cx="520" cy="95" r="10"/><circle cx="700" cy="95" r="10"/><circle cx="1000" cy="95" r="10"/><circle cx="1260" cy="95" r="10"/>
+      <circle cx="120" cy="160" r="10"/><circle cx="240" cy="160" r="10"/><circle cx="360" cy="160" r="10"/><circle cx="520" cy="160" r="10"/><circle cx="620" cy="160" r="10"/><circle cx="700" cy="160" r="10"/><circle cx="1260" cy="160" r="10"/>
+    </g>
+    <g fill="#5b6878"><circle cx="120" cy="225" r="7"/><circle cx="180" cy="225" r="7"/><circle cx="240" cy="225" r="7"/><circle cx="300" cy="225" r="7"/><circle cx="360" cy="225" r="7"/><circle cx="440" cy="225" r="7"/><circle cx="520" cy="225" r="7"/><circle cx="570" cy="225" r="7"/><circle cx="620" cy="225" r="7"/><circle cx="660" cy="225" r="7"/><circle cx="700" cy="225" r="7"/><circle cx="760" cy="225" r="7"/><circle cx="820" cy="225" r="7"/><circle cx="900" cy="225" r="7"/><circle cx="1000" cy="225" r="7"/><circle cx="1050" cy="225" r="7"/><circle cx="1100" cy="225" r="7"/><circle cx="1180" cy="225" r="7"/><circle cx="1260" cy="225" r="7"/><circle cx="1320" cy="225" r="7"/></g>
+    <g stroke="#c2870f" stroke-width="5" fill="none" marker-end="url(#b3)"><path d="M120 30 H508"/><path d="M520 42 V83"/><path d="M520 95 H688"/><path d="M700 107 V148"/></g>
+    <g stroke="#2563eb" stroke-width="5" fill="none" marker-end="url(#b4)"><path d="M712 160 H808"/><path d="M832 160 H988"/><path d="M1012 160 H1088"/></g>
+    <g fill="#2563eb"><circle cx="820" cy="160" r="12"/><circle cx="1000" cy="160" r="12"/><circle cx="1100" cy="160" r="12"/></g>
+    <g font-size="19" font-weight="700"><text x="120" y="270" fill="#c2870f">1 · descida até o início da faixa</text><text x="430" y="270" fill="#2563eb">2 · varredura só no nível 1</text></g>
+  </svg>
+  <div class="qa-panel cols">
+    <div class="lbl">Se o professor perguntar</div>
+    <div class="qi"><b>Qual o custo?</b><span class="a">A descida até o início da faixa (95 passos em média com 5 níveis) mais os k nós percorridos no nível. Em níveis altos, k é menor.</span></div>
+    <div class="qi"><b>Por que não percorrer o nível 0?</b><span class="a">Seria preciso passar por todos os locais mais próximos que o mínimo. A descida pula esses locais pelos níveis altos: 14 nós até 100 km de João Pessoa.</span></div>
+    <div class="qi"><b>O que muda da busca clássica?</b><span class="a">A clássica acha uma chave. A nossa para no início da faixa, continua no nível escolhido e devolve o caminho, que a tela pinta de amarelo.</span></div>
+  </div>
+  <div class="footer"><span>SkipList.buscar_intervalo(minimo, maximo, nivel)</span><span>00</span></div>
+</section>
+
+<!-- 7. Splay como cache -->
+<section class="slide" data-title="Splay Tree: cache">
+  <div class="eyebrow">Estrutura hierárquica · modificação 3</div>
+  <h2>Splay Tree: o cache dos locais abertos</h2>
+  <div class="row grow">
+    <svg viewBox="0 0 770 470" width="770" height="470" aria-label="Fluxo do cache: clique em Ver local, procura na árvore; se achar, splay e contador; se não, busca linear na base e inserção">
+      <defs><marker id="b5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b6878"/></marker></defs>
+      <g stroke="#5b6878" stroke-width="2.5" fill="none" marker-end="url(#b5)">
+        <line x1="210" y1="60" x2="268" y2="60"/><line x1="482" y1="60" x2="540" y2="60"/><line x1="375" y1="112" x2="375" y2="178"/><line x1="375" y1="268" x2="375" y2="318"/>
+      </g>
+      <g font-size="20">
+        <rect x="0" y="22" width="210" height="76" rx="10" fill="#fff" stroke="#13233a" stroke-width="2"/>
+        <text x="105" y="56" text-anchor="middle" font-weight="700" fill="#13233a">“Ver local”</text>
+        <text x="105" y="82" text-anchor="middle" font-size="17" fill="#5b6878">id do local</text>
+        <polygon points="268,60 375,8 482,60 375,112" fill="#13233a"/>
+        <text x="375" y="56" text-anchor="middle" fill="#f2f5f3" font-weight="700">Está na</text>
+        <text x="375" y="80" text-anchor="middle" fill="#f2f5f3" font-weight="700">árvore?</text>
+        <text x="511" y="48" text-anchor="middle" font-size="17" fill="#5b6878">sim</text>
+        <text x="392" y="152" font-size="17" fill="#5b6878">não</text>
+        <rect x="540" y="10" width="228" height="100" rx="10" fill="#dbe6fd" stroke="#2563eb" stroke-width="2"/>
+        <text x="654" y="42" text-anchor="middle" font-weight="700" fill="#13233a">Acerto no cache</text>
+        <text x="654" y="68" text-anchor="middle" font-size="17" fill="#13233a">splay + contador</text>
+        <text x="654" y="92" text-anchor="middle" font-size="17" fill="#5b6878">a base não é consultada</text>
+        <rect x="230" y="178" width="290" height="90" rx="10" fill="#fff" stroke="#13233a" stroke-width="2"/>
+        <text x="375" y="210" text-anchor="middle" font-weight="700" fill="#13233a">Falha no cache</text>
+        <text x="375" y="236" text-anchor="middle" class="m" font-size="16" fill="#13233a">buscar_na_base(id)</text>
+        <text x="375" y="258" text-anchor="middle" font-size="17" fill="#5b6878">busca linear, O(n)</text>
+        <rect x="230" y="318" width="290" height="110" rx="10" fill="#fde9a8" stroke="#13233a" stroke-width="2"/>
+        <text x="375" y="350" text-anchor="middle" font-weight="700" fill="#13233a">Inserir na árvore</text>
+        <text x="375" y="376" text-anchor="middle" font-size="17" fill="#13233a">o local vai para a raiz</text>
+        <text x="375" y="400" text-anchor="middle" font-size="17" fill="#13233a">mais de 15 nós? remove</text>
+        <text x="375" y="420" text-anchor="middle" font-size="17" fill="#13233a">a folha mais profunda</text>
+      </g>
+      <text x="0" y="462" font-size="18" fill="#5b6878">Nos dois casos o local termina na raiz.</text>
+    </svg>
+    <div class="qa-panel grow">
+      <div class="lbl">Se o professor perguntar</div>
+      <div class="qi"><b>Para que serve a Splay Tree aqui?</b><span class="a">É o cache dos locais abertos. Antes de procurar nos 2.580, procuramos na árvore; se achar, a base nem é consultada.</span></div>
+      <div class="qi"><b>Por que uma Splay Tree?</b><span class="a">Quem navega volta aos mesmos lugares. O splay deixa os recentes perto da raiz, e o custo amortizado é O(log k), com k ≤ 15.</span></div>
+      <div class="qi"><b>Por que o id como chave?</b><span class="a">O clique em “Ver local” identifica o local pelo id. É a chave natural da consulta.</span></div>
+      <div class="qi"><b>A falha no cache não é lenta?</b><span class="a">É O(n), uma busca linear; com 2.580 locais é imperceptível. O(1) exigiria um dicionário, fora das estruturas vistas em aula.</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>SplayTree.acessar(id, buscar_na_base) · app.py</span><span>00</span></div>
+</section>
+
+<!-- 8. Rotações e descarte -->
+<section class="slide" data-title="Splay Tree: rotações e descarte">
+  <div class="eyebrow">Estrutura hierárquica · splay</div>
+  <h2>Rotações, capacidade e descarte</h2>
+  <div class="row grow">
+    <div class="col" style="flex:1">
+      <svg viewBox="0 0 640 300" width="620" height="290" aria-label="Zig-zig: g, p, x em linha; depois x na raiz com p e g abaixo">
+        <defs><marker id="b6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b6878"/></marker></defs>
+        <text x="0" y="22" class="m" font-size="17" fill="#5b6878" letter-spacing="2">ZIG-ZIG = 1 PASSO, 2 ROTAÇÕES</text>
+        <g stroke="#13233a" stroke-width="2.5"><line x1="200" y1="70" x2="140" y2="160"/><line x1="140" y1="160" x2="80" y2="250"/><line x1="440" y1="70" x2="500" y2="160"/><line x1="500" y1="160" x2="560" y2="250"/></g>
+        <g font-size="24" font-weight="700" fill="#13233a" text-anchor="middle">
+          <circle cx="200" cy="70" r="30" fill="#fff" stroke="#13233a" stroke-width="2.5"/><text x="200" y="78">g</text>
+          <circle cx="140" cy="160" r="30" fill="#fff" stroke="#13233a" stroke-width="2.5"/><text x="140" y="168">p</text>
+          <circle cx="80" cy="250" r="30" fill="#f3c14b" stroke="#13233a" stroke-width="2.5"/><text x="80" y="258">x</text>
+          <circle cx="440" cy="70" r="30" fill="#f3c14b" stroke="#13233a" stroke-width="2.5"/><text x="440" y="78">x</text>
+          <circle cx="500" cy="160" r="30" fill="#fff" stroke="#13233a" stroke-width="2.5"/><text x="500" y="168">p</text>
+          <circle cx="560" cy="250" r="30" fill="#fff" stroke="#13233a" stroke-width="2.5"/><text x="560" y="258">g</text>
+        </g>
+        <line x1="270" y1="160" x2="360" y2="160" stroke="#5b6878" stroke-width="3" marker-end="url(#b6)"/>
+      </svg>
+      <table class="mini">
+        <tr><th>Passo</th><th>Quando</th><th>Rotações</th></tr>
+        <tr><td>zig</td><td>o pai é a raiz</td><td>1</td></tr>
+        <tr><td>zig-zig</td><td>nó e pai do mesmo lado</td><td>2: avô, depois pai</td></tr>
+        <tr><td>zig-zag</td><td>nó e pai em lados opostos</td><td>2: pai, depois avô</td></tr>
+      </table>
+    </div>
+    <div class="qa-panel" style="flex:1">
+      <div class="lbl">Se o professor perguntar</div>
+      <div class="qi"><b>Por que girar o avô antes no zig-zig?</b><span class="a">É o que garante o custo amortizado O(log n): o caminho acessado fica com cerca de metade da profundidade. Só girar o pai repetidamente não garante.</span></div>
+      <div class="qi"><b>A folha mais profunda é a menos usada?</b><span class="a">É uma aproximação: o splay afunda o que não é acessado, mas uma rotação pode descer um nó recente. O exato exigiria guardar a hora de cada acesso.</span></div>
+      <div class="qi"><b>Qual o custo do descarte?</b><span class="a">Um percurso da árvore: O(k), com k = 16 no momento do descarte. A raiz, recém-acessada, nunca é removida.</span></div>
+      <div class="qi"><b>O que vocês corrigiram no registro?</b><span class="a">Cada passo ganha um único nome. Antes, um zig-zig aparecia como “zig-zig → zig”, contando a segunda rotação como outro passo.</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>SplayTree._splay() · _remover_folha_mais_profunda()</span><span>00</span></div>
+</section>
+
+<!-- 9. Resumo -->
+<section class="slide" data-title="Resumo para consulta">
+  <div class="eyebrow">Resumo para consulta</div>
+  <h2>O que é clássico, o que mudou e quanto custa</h2>
+  <table>
+    <tr><th style="width:19%">Estrutura</th><th style="width:21%">Operação</th><th style="width:30%">Nossa versão</th><th>Custo</th></tr>
+    <tr><td>Lista MTF</td><td><code>acessar</code></td><td>Clássica + contador</td><td>O(n), n = 8</td></tr>
+    <tr><td>Skip List</td><td><code>inserir</code></td><td>Nível pela relevância</td><td>~95 passos com 5 níveis (lista: 1.290)</td></tr>
+    <tr><td>Skip List</td><td><code>buscar_intervalo</code></td><td>Faixa de distância em um nível</td><td>descida + k nós do nível</td></tr>
+    <tr><td>Splay Tree</td><td><code>acessar</code></td><td>Cache: base só na falha</td><td>O(log k) amortizado; falha: + O(n)</td></tr>
+    <tr><td>Splay Tree</td><td>descarte</td><td>Folha mais profunda, k ≤ 15</td><td>O(k)</td></tr>
+  </table>
+  <p class="small"><b style="color:var(--ink)">Requisitos:</b> lineares: Lista MTF e Skip List · hierárquica: Splay Tree · o enunciado exige Skip List ou Splay Tree: usamos as duas, ambas modificadas.</p>
+  <div class="footer"><span>README.md · ALTERACOES.md</span><span>00</span></div>
+</section>
+
+<!-- 10. Demonstração -->
+<section class="slide dark" data-title="Demonstração">
+  <div class="eyebrow">Demonstração</div>
+  <h2>A aplicação em execução</h2>
+  <div class="row grow">
+    <div class="col" style="flex:1">
+      <pre class="term"><span class="c"># na pasta explorador-mapas</span>
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install flask
+python app.py
+<span class="c"># abrir http://127.0.0.1:5000</span></pre>
+    </div>
+    <div class="col" style="flex:1">
+      <h3>Roteiro ao vivo</h3>
+      <ul class="plain">
+        <li>Nível 0 → nível 4: o mapa resume</li>
+        <li>Praias, Igrejas, Praias: a lista reordena</li>
+        <li>De 100 até 200 km: caminho em amarelo</li>
+        <li>Abrir 6 locais, reabrir o Farol: cache</li>
+        <li>Clicar em Salvador: nova referência</li>
+      </ul>
+    </div>
+  </div>
+  <p class="small">As próximas telas foram capturadas com a aplicação rodando, seguindo este roteiro.</p>
+  <div class="footer"><span>Flask · Leaflet · OpenStreetMap</span><span>00</span></div>
+</section>
+
+<!-- 11. Demo: Skip List e Lista -->
+<section class="slide" data-title="Demo: Skip List e Lista">
+  <div class="eyebrow">Demonstração · Skip List e Lista com Movimentação ao Início</div>
+  <h2>Nível 4, faixa de 100 a 200 km e categorias reordenadas</h2>
+  <div class="row grow">
+    <figure class="shot" style="margin:0;flex:1.1"><div class="frame"><img src="{{IMG:02-nivel4.png}}" alt="Mapa no nível 4 com 63 locais até 500 km de João Pessoa"></div><div class="cap">Nível 4: 63 locais (no nível 0 são 894)</div></figure>
+    <div class="col" style="flex:1">
+      <figure class="shot" style="margin:0;height:210px"><div class="frame"><img src="{{IMG:03-categorias.png}}" alt="Categorias reordenadas: Praias (2), Igrejas (1)" style="width:190%;height:auto;max-width:none"></div><div class="cap">Praias (2) e Igrejas (1) no início da lista</div></figure>
+      <figure class="shot grow" style="margin:0"><div class="frame"><img src="{{IMG:05-skiplist.png}}" alt="Skip List com os nós da descida em amarelo"></div><div class="cap">Em amarelo: nós da descida até 100 km</div></figure>
+    </div>
+  </div>
+  <div class="footer"><span>/api/locais · /api/categoria/Praias</span><span>00</span></div>
+</section>
+
+<!-- 12. Demo: Splay -->
+<section class="slide" data-title="Demo: Splay Tree">
+  <div class="eyebrow">Demonstração · Splay Tree como cache</div>
+  <h2>Reabrir o Farol: ele vem do cache e sobe à raiz</h2>
+  <div class="row grow">
+    <figure class="shot grow" style="margin:0"><div class="frame"><img src="{{IMG:07a-splay-falha.png}}" alt="Antes: Museu de Arte Popular na raiz e Farol do Cabo Branco a quatro níveis de profundidade"></div><div class="cap">Antes: 6 locais abertos, o Farol está no nível 4</div></figure>
+    <figure class="shot grow" style="margin:0"><div class="frame"><img src="{{IMG:07-splay.png}}" alt="Depois: Farol do Cabo Branco na raiz com 2 acessos, vindo do cache, rotações zig-zag e zig-zig"></div><div class="cap">Depois: veio do cache, subiu com zig-zag → zig-zig</div></figure>
+  </div>
+  <p class="small">Os 6 primeiros acessos foram falhas (busca na base e inserção). O sétimo não consultou os 2.580 locais.</p>
+  <div class="footer"><span>/api/local/1691</span><span>00</span></div>
+</section>
+
+<!-- 13. Testes e processo -->
+<section class="slide" data-title="Testes e processo">
+  <div class="eyebrow">Testes e processo</div>
+  <h2>18 testes automáticos e uma mudança por vez</h2>
+  <div class="row">
+    <div class="card grow"><h3>Lista · 5</h3><p class="small">vai para o início, ordem dos demais, sem duplicatas, contadores</p></div>
+    <div class="card grow"><h3>Skip List · 5</h3><p class="small">nível 0 ordenado, nível ⊂ nível de baixo, nível fixo, intervalo = força bruta</p></div>
+    <div class="card grow"><h3>Splay Tree · 8</h3><p class="small">raiz, árvore de busca, capacidade, cache só vai à base na falha, um nome por passo</p></div>
+  </div>
+  <pre class="term">python -m unittest discover tests -v      <span class="c"># Ran 18 tests … OK</span></pre>
+  <p style="font-size:24px"><b>Processo:</b> projeto-base clássico → testes e modificações → base do Wikidata → chave geográfica → interface → Splay como cache. Critério: manter tudo simples o bastante para explicar.</p>
+  <p class="small">Desenvolvido com auxílio de LLM (Claude), como o enunciado permite.</p>
+  <div class="footer"><span>tests/test_estruturas.py · ALTERACOES.md</span><span>00</span></div>
+</section>
+
+<!-- 14. Perguntas gerais -->
+<section class="slide" data-title="Perguntas gerais">
+  <div class="eyebrow">Perguntas gerais</div>
+  <h2>Sobre o trabalho como um todo</h2>
+  <div class="qa-panel cols2">
+    <div class="lbl">Se o professor perguntar</div>
+    <div class="qi"><b>Onde estão a estrutura linear e a hierárquica?</b><span class="a">Lineares: Lista com Movimentação ao Início (categorias) e Skip List (locais). Hierárquica: Splay Tree (cache de locais abertos).</span></div>
+    <div class="qi"><b>Quais algoritmos vocês modificaram?</b><span class="a">Skip List: nível pela relevância e busca por intervalo em um nível. Splay Tree: cache com capacidade, descarte da folha mais profunda e registro dos passos.</span></div>
+    <div class="qi"><b>De onde vêm os dados?</b><span class="a">Do Wikidata, por SPARQL, uma consulta por estado do Nordeste: 2.580 locais, 915 com imagem do Commons. Dados CC0.</span></div>
+    <div class="qi"><b>Vocês usaram list do Python?</b><span class="a">Só para carregar o JSON e na busca linear da falha do cache. Toda a navegação passa pelas três estruturas, implementadas do zero.</span></div>
+    <div class="qi"><b>As estruturas mudam o que o usuário vê?</b><span class="a">Sim: a ordem dos botões é a lista, o mapa mostra um nível da Skip List e o painel da árvore mostra o cache e as rotações.</span></div>
+    <div class="qi"><b>O que fariam diferente?</b><span class="a">Mais níveis na Skip List para recuperar o O(log n), e uma árvore ordenada por nome para a busca textual, que hoje é linear.</span></div>
+  </div>
+  <div class="footer"><span>Explorador de Mapas</span><span>00</span></div>
+</section>
+
+<!-- 15. Encerramento -->
+{{SLIDE_V1:22}}
+
+</div>
+</div>
+
+<div class="progress" id="progress"></div>
+<nav class="ctrl" aria-label="Navegação dos slides">
+  <span class="title" id="slideTitle">Capa</span>
+  <div class="nav">
+    <button type="button" id="respostas" aria-pressed="true" title="Tecla R">Respostas: visíveis</button>
+    <button type="button" id="prev" aria-label="Slide anterior">←</button>
+    <span id="counter" style="min-width:64px;text-align:center">1 / 15</span>
+    <button type="button" id="next" aria-label="Próximo slide">→</button>
+    <button type="button" id="full">Tela cheia</button>
+  </div>
+</nav>
+
+<script>
+(function () {
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const stage = document.getElementById("stage");
+  const viewport = document.getElementById("viewport");
+  const botaoRespostas = document.getElementById("respostas");
+  let atual = 0;
+
+  function escalar() {
+    const w = viewport.clientWidth, h = viewport.clientHeight;
+    const s = Math.min(w / 1600, h / 900);
+    stage.style.transform = "scale(" + s + ")";
+    stage.style.left = ((w - 1600 * s) / 2) + "px";
+    stage.style.top = ((h - 900 * s) / 2) + "px";
+  }
+
+  function mostrar(i) {
+    atual = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, j) => s.classList.toggle("on", j === atual));
+    document.getElementById("counter").textContent = (atual + 1) + " / " + slides.length;
+    document.getElementById("slideTitle").textContent = slides[atual].dataset.title || "";
+    document.getElementById("progress").style.width = ((atual + 1) / slides.length * 100) + "%";
+    try { history.replaceState(null, "", "#s" + (atual + 1)); } catch (e) {}
+  }
+
+  // Mostra ou esconde as respostas preparadas (as perguntas continuam).
+  function alternarRespostas() {
+    const ocultas = document.body.classList.toggle("sem-respostas");
+    botaoRespostas.textContent = ocultas ? "Respostas: ocultas" : "Respostas: visíveis";
+    botaoRespostas.setAttribute("aria-pressed", String(!ocultas));
+  }
+
+  function lerHash() {
+    const m = /^#s(\d+)$/.exec(location.hash);
+    return m ? Number(m[1]) - 1 : 0;
+  }
+
+  botaoRespostas.addEventListener("click", alternarRespostas);
+  document.getElementById("prev").addEventListener("click", () => mostrar(atual - 1));
+  document.getElementById("next").addEventListener("click", () => mostrar(atual + 1));
+  document.getElementById("full").addEventListener("click", () => {
+    const el = document.documentElement;
+    if (document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }
+    else if (el.requestFullscreen) { el.requestFullscreen().catch(() => {}); }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.target.closest && e.target.closest("button") && (e.key === " " || e.key === "Enter")) return;
+    if (["ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); mostrar(atual + 1); }
+    else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); mostrar(atual - 1); }
+    else if (e.key === "Home") mostrar(0);
+    else if (e.key === "End") mostrar(slides.length - 1);
+    else if (e.key === "r" || e.key === "R") alternarRespostas();
+  });
+
+  window.addEventListener("resize", escalar);
+  window.addEventListener("hashchange", () => {
+    const i = lerHash();
+    if (i !== atual) mostrar(i);
+  });
+  escalar();
+  mostrar(lerHash());
+})();
+</script>
