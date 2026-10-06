@@ -80,7 +80,8 @@ for local in LOCAIS:
 referencia = REFERENCIA_PADRAO
 skip_list = construir_skip_list(*referencia)
 
-# Estrutura hierárquica: histórico dos locais acessados (começa vazia).
+# Estrutura hierárquica: cache e histórico dos locais acessados
+# (começa vazia).
 splay_tree = SplayTree(capacidade=CAPACIDADE_SPLAY)
 
 
@@ -151,22 +152,32 @@ def api_categoria(categoria):
     })
 
 
-@app.route("/api/local/<int:local_id>")
-def api_local(local_id):
-    local = next(
+def buscar_na_base(local_id):
+    """
+    Busca linear na lista com todos os locais: O(n), n = 2.580.
+    Só é usada quando o local não está no cache (Splay Tree).
+    """
+    return next(
         (item for item in LOCAIS if item.id == local_id),
         None,
     )
 
+
+@app.route("/api/local/<int:local_id>")
+def api_local(local_id):
+    # A Splay Tree é consultada primeiro (cache dos locais recentes).
+    # Só em caso de falha ela chama buscar_na_base. Nos dois casos o
+    # local termina na raiz da árvore.
+    local = splay_tree.acessar(local_id, buscar_na_base)
+
     if local is None:
         return jsonify({"erro": "Local não encontrado"}), 404
 
-    # Acesso à Splay Tree: o local é buscado (ou inserido) e vai para a raiz.
-    splay_tree.acessar(local.id, local)
     removido = splay_tree.ultimo_removido
 
     return jsonify({
         "local": local_com_distancia(local),
+        "origem": splay_tree.ultima_origem,
         "splay": splay_tree.estrutura(),
         "historico": splay_tree.historico(),
         "rotacoes": splay_tree.ultimas_rotacoes,

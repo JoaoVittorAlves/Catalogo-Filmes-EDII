@@ -13,7 +13,7 @@ implementar funcionalidades visíveis ao usuário.
 |---|---|---|
 | Lista com Movimentação ao Início | linear | Categorias, na ordem das mais recentemente acessadas |
 | Skip List | linear com níveis | Locais ordenados pela distância até um ponto de referência; os níveis controlam o detalhamento do mapa |
-| Splay Tree (Árvore Afunilada) | hierárquica | Histórico dos locais acessados; o último acessado fica na raiz |
+| Splay Tree (Árvore Afunilada) | hierárquica | Cache e histórico dos locais acessados; o último acessado fica na raiz |
 
 ### 1. Lista com Movimentação ao Início
 
@@ -42,10 +42,18 @@ Os botões aparecem na ordem da lista.
 
 ### 3. Splay Tree
 
-Guarda o histórico dos locais acessados, com o `id` como chave. Ao clicar
-em "Ver local", o local é acessado na árvore e o splay o leva até a raiz.
-A interface mostra:
+Funciona como **cache** dos locais acessados recentemente, com o `id` como
+chave. Ao clicar em "Ver local":
 
+1. a aplicação procura o local primeiro na Splay Tree;
+2. se ele estiver lá (acerto no cache), a lista com os 2.580 locais não é
+   consultada;
+3. se não estiver (falha no cache), ele é buscado na lista completa, por
+   busca linear, e inserido na árvore.
+
+Nos dois casos o splay leva o local até a raiz. A interface mostra:
+
+- se o local veio do cache ou da base;
 - a árvore;
 - o número de acessos de cada nó;
 - as rotações feitas (zig, zig-zig, zig-zag).
@@ -68,10 +76,22 @@ A interface mostra:
 - **Por quê:**
   - Mantemos a mesma proporção esperada da versão clássica (cada nível tem
     cerca de metade dos nós do nível abaixo: 2580 → 1290 → 645 → 323 →
-    162), então a busca continua O(log n).
+    162).
   - O que muda é **quem** sobe: os níveis altos passam a funcionar como o
     "zoom" de um mapa real, mostrando só os locais mais importantes.
   - No modelo clássico, o nível 4 mostraria locais aleatórios.
+- **Custo da busca (medido em 500 buscas):**
+
+  | Configuração | Passos em média | Pior caso |
+  |---|---|---|
+  | Nossa (relevância, 5 níveis) | 95,5 | 175 |
+  | Clássica (sorteio, 5 níveis) | 92,3 | 177 |
+  | Clássica (sorteio, 12 níveis) | 22,9 | 36 |
+  | Lista simples | 1.290 | 2.580 |
+
+  Definir o nível pela relevância não piora a busca. O limite de 5 níveis
+  (`max_nivel = 4`, um por nível de zoom) é que impede o O(log n): para
+  2.580 locais seriam necessários uns 11 níveis.
 - **Observação:** muitos locais têm a mesma relevância. O empate é
   resolvido pelo `id`.
 
@@ -81,7 +101,8 @@ A interface mostra:
 
 1. **Descida:** igual à busca clássica, desce do nível mais alto até o
    nível escolhido, procurando o último nó com distância menor que
-   `minimo`. Custo O(log n).
+   `minimo`. Seria O(log n) com níveis suficientes; com nossos 5 níveis,
+   custa em média uns 95 passos (veja a tabela acima).
 2. **Varredura:** percorre apenas o nível escolhido enquanto a distância
    for menor ou igual a `maximo`.
 
@@ -92,12 +113,17 @@ caminho aparecem destacados em amarelo na visualização da Skip List.
 visita cerca de 14 nós na descida. Uma lista simples precisaria passar
 pelos centenas de locais mais próximos antes de chegar aos 100 km.
 
-### Splay Tree: histórico com capacidade limitada
+### Splay Tree: cache com capacidade limitada
 
-1. **A árvore começa vazia.** `acessar(chave, valor)` faz duas coisas:
-   - se o local já está na árvore, faz o splay e incrementa o contador de
-     acessos do nó;
-   - se não está, insere o local (a inserção também deixa o nó na raiz).
+1. **A árvore começa vazia e funciona como cache.**
+   `acessar(chave, carregar)` recebe a função que busca o local na base:
+   - se o local já está na árvore, faz o splay, incrementa o contador de
+     acessos e **não chama** `carregar`;
+   - se não está, chama `carregar(chave)` (busca linear em `app.py`) e
+     insere o local (a inserção também deixa o nó na raiz).
+
+   Isso usa a propriedade central da Splay Tree: o que foi acessado há
+   pouco fica perto da raiz, então reabrir um local recente custa pouco.
 2. **A capacidade é limitada** (15 nós). Ao passar do limite, a folha mais
    profunda é removida. A ideia vem da própria splay:
    - os nós acessados sobem para perto da raiz;
@@ -108,7 +134,8 @@ pelos centenas de locais mais próximos antes de chegar aos 100 km.
    Isso também mantém a árvore pequena o bastante para ser exibida na tela.
 3. **Registro das rotações.** O splay anota cada passo (`zig`, `zig-zig`
    ou `zig-zag`) em `ultimas_rotacoes`, para mostrar ao usuário o que
-   aconteceu.
+   aconteceu. Um zig-zig ou zig-zag tem duas rotações, mas é registrado
+   como um único passo.
 
 ### Lista com Movimentação ao Início
 
@@ -207,7 +234,7 @@ Depois abra `http://127.0.0.1:5000`.
 python -m unittest discover tests -v
 ```
 
-Os 15 testes verificam:
+Os 18 testes verificam:
 
 - **Lista com Movimentação ao Início:**
   - movimentação ao início;
@@ -223,7 +250,9 @@ Os 15 testes verificam:
   - propriedade de árvore de busca;
   - capacidade respeitada;
   - contadores;
-  - registro de zig-zig.
+  - o cache só consulta a base quando o local não está na árvore;
+  - local inexistente não entra na árvore;
+  - registro de zig, zig-zig e zig-zag (um nome por passo).
 
 ## Processo de desenvolvimento
 
@@ -242,6 +271,8 @@ Os 15 testes verificam:
 6. Melhoria das visualizações:
    - Skip List com distância, total de nós e caminho destacado;
    - Splay Tree com contadores e rotações.
+7. Splay Tree passa a funcionar como cache da rota `/api/local/<id>` e o
+   registro das rotações é corrigido (detalhes em `ALTERACOES.md`).
 
 O desenvolvimento contou com o auxílio de LLM (Claude), como permitido no
 enunciado.
